@@ -8,18 +8,18 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { 
     cors: { origin: "*" },
-    maxHttpBufferSize: 5e7 // لدعم الصور والفيديوهات بسلاسة
+    maxHttpBufferSize: 5e7 
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); // تخزين الحسابات في الذاكرة
-const onlineUsers = new Map(); // المستخدمين المتصلين
-const socketToUser = new Map(); // ربط السوكت بالمستخدم
+const usersDB = new Map(); 
+const onlineUsers = new Map(); 
+const socketToUser = new Map(); 
+const groupsDB = new Map(); // تخزين المجموعات
 
 io.on('connection', (socket) => {
 
-    // تسجيل حساب جديد
     socket.on('register', async ({ username, password, avatar }, callback) => {
         const cleanName = username.trim();
         if (!cleanName || !password) return callback({ success: false, msg: 'يرجى إدخال البيانات كاملة' });
@@ -30,7 +30,6 @@ io.on('connection', (socket) => {
         callback({ success: true, msg: 'تم إنشاء الحساب بنجاح!' });
     });
 
-    // تسجيل الدخول
     socket.on('login', async ({ username, password }, callback) => {
         const cleanName = username.trim();
         const user = usersDB.get(cleanName);
@@ -46,7 +45,6 @@ io.on('connection', (socket) => {
         broadcastOnlineList();
     });
 
-    // إعادة الاتصال التلقائي (لحل مشكلة تأخر الرسائل والرفرش)
     socket.on('auto_login', ({ username }, callback) => {
         const cleanName = username ? username.trim() : '';
         const user = usersDB.get(cleanName);
@@ -61,14 +59,32 @@ io.on('connection', (socket) => {
     });
 
     function broadcastOnlineList() {
-        const list = Array.from(onlineUsers.keys()).map(name => ({
+        const list = Array.from(usersDB.keys()).map(name => ({
             username: name,
-            avatar: usersDB.get(name)?.avatar || '⚡'
+            avatar: usersDB.get(name)?.avatar || '⚡',
+            isOnline: onlineUsers.has(name)
         }));
-        io.emit('update_online_users', list);
+        io.emit('update_users_list', list);
     }
 
-    // إرسال الرسائل والوسائط فوراً
+    // إنشاء مجموعة جديدة
+    socket.on('create_group', ({ groupName, members }) => {
+        const creator = socketToUser.get(socket.id);
+        if (!groupName || groupsDB.has(groupName)) return;
+
+        const groupData = { name: groupName, members: [...members, creator], creator };
+        groupsDB.set(groupName, groupData);
+
+        // إشعار كل الأعضاء بالانضمام للمجموعة
+        groupData.members.forEach(member => {
+            const memberSocketId = onlineUsers.get(member);
+            if (memberSocketId) {
+                io.to(memberSocketId).emit('group_created', groupData);
+            }
+        });
+    });
+
+    // رسائل خاصة
     socket.on('send_private_msg', ({ to, message, file, fileType }) => {
         const sender = socketToUser.get(socket.id);
         const recipientSocketId = onlineUsers.get(to);
@@ -90,7 +106,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // إشارات المكالمات (WebRTC Signaling)
+    // WebRTC Calls
     socket.on('call_user', ({ to, offer, isVideo }) => {
         const caller = socketToUser.get(socket.id);
         const recipientSocketId = onlineUsers.get(to);
@@ -131,4 +147,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 سيرفر Nexus يعمل بكفاءة تامة على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 السيرفر يعمل بكفاءة على المنفذ: ${PORT}`));
