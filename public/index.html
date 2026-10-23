@@ -164,7 +164,7 @@
             ] 
         };
 
-        // --- إصلاح مشكلة انقطاع الاتصال ووصول الرسائل فوراً ---
+        // التحقق من الدخول التلقائي عند الاتصال أو إعادة الاتصال
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             if (savedUser) {
@@ -208,22 +208,30 @@
 
         function showError(msg) {
             const err = document.getElementById('authError');
-            err.innerText = msg; err.classList.remove('hidden');
+            err.innerText = msg; 
+            err.classList.remove('hidden');
         }
 
         function handleRegister() {
-            const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
+            const u = document.getElementById('authUsername').value;
+            const p = document.getElementById('authPassword').value;
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) showError(res.msg);
-                else alert(res.msg);
+                if (!res.success) {
+                    showError(res.msg);
+                } else {
+                    alert(res.msg);
+                    document.getElementById('authError').classList.add('hidden');
+                }
             });
         }
 
         function handleLogin() {
-            const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
+            const u = document.getElementById('authUsername').value;
+            const p = document.getElementById('authPassword').value;
             socket.emit('login', { username: u, password: p }, res => {
-                if (!res.success) showError(res.msg);
-                else {
+                if (!res.success) {
+                    showError(res.msg);
+                } else {
                     myName = res.username;
                     localStorage.setItem('nexus_user', myName);
                     document.getElementById('myUsername').innerText = myName;
@@ -391,7 +399,7 @@
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
-            }CATCH (err) {
+            } catch (err) {
                 alert("يرجى تفعيل صلاحيات الكاميرا والمايك من المتصفح!");
                 endCall(false);
             }
