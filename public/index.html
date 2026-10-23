@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <div id="usersList" class="space-y-2 overflow-y-auto max-h-[78vh] custom-scrollbar">
-                    <!-- تتعبأ بجميع المستخدمين (متصل وغير متصل) -->
+                    <!-- تتعبأ بجميع المستخدمين -->
                 </div>
             </div>
         </div>
@@ -164,8 +164,8 @@
             ] 
         };
 
-        // عند تحميل الصفحة، التحقق إذا كان هناك حساب محفوظ مسبقاً (دخول تلقائي)
-        window.addEventListener('DOMContentLoaded', () => {
+        // --- إصلاح مشكلة انقطاع الاتصال ووصول الرسائل فوراً ---
+        socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             if (savedUser) {
                 socket.emit('auto_login', { username: savedUser }, res => {
@@ -225,7 +225,7 @@
                 if (!res.success) showError(res.msg);
                 else {
                     myName = res.username;
-                    localStorage.setItem('nexus_user', myName); // حفظ الحساب تلقائياً
+                    localStorage.setItem('nexus_user', myName);
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('authModal').classList.add('hidden');
 
@@ -244,7 +244,6 @@
             location.reload();
         }
 
-        // تحديث وعرض كل المستخدمين (مع توضيح من المتصل ومن غير المتصل)
         socket.on('update_users_list', list => {
             const container = document.getElementById('usersList');
             container.innerHTML = '';
@@ -392,7 +391,7 @@
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
-            } catch (err) {
+            }CATCH (err) {
                 alert("يرجى تفعيل صلاحيات الكاميرا والمايك من المتصفح!");
                 endCall(false);
             }
