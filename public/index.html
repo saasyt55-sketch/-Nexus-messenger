@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NexusChat VIP - الأسطوري النظيف</title>
+    <title>-Nexus-messenger - الأسطوري الشامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,8 +20,8 @@
     <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-slate-900 border border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
-            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">Nexus VIP</h1>
-            <p class="text-slate-400 text-xs mb-6">سجل دخولك واستمتع بالمحادثات الفورية والمكالمات</p>
+            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">-Nexus-</h1>
+            <p class="text-slate-400 text-xs mb-6">سجل دخولك واستمتع بالمحادثات والمكالمات الفورية</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white text-center text-sm focus:outline-none focus:border-cyan-400">
@@ -44,13 +44,16 @@
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-950 border-l border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300">
             <div>
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-800 pb-3">
-                    <h2 class="font-black text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-users"></i> المتصلون</h2>
                     <div class="flex items-center gap-2">
-                        <button onclick="logout()" title="تسجيل الخروج" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 hover:text-white flex items-center justify-center transition">
-                            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                        <h2 class="font-black text-cyan-400">المحادثات</h2>
+                        <!-- زر الإضافة (+) -->
+                        <button onclick="openActionMenu()" title="إضافة دردشة أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
+                            <i class="fa-solid fa-plus text-xs"></i>
                         </button>
-                        <button onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 flex items-center justify-center transition">
-                            <i class="fa-solid fa-gear text-xs"></i>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="logout()" title="خروج" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 hover:text-white flex items-center justify-center transition">
+                            <i class="fa-solid fa-right-from-bracket text-xs"></i>
                         </button>
                         <span id="myUsername" class="text-xs bg-cyan-950 text-cyan-300 px-3 py-1 rounded-full font-bold">...</span>
                     </div>
@@ -61,7 +64,6 @@
 
         <!-- شاشة المحادثة -->
         <div id="chatPanel" class="w-full flex-1 flex flex-col bg-slate-900/40 relative h-full">
-            
             <div id="chatHeader" class="p-3 sm:p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
                 <div class="flex items-center gap-3">
                     <button onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-cyan-400">
@@ -70,7 +72,7 @@
                     <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg">💬</div>
                     <div>
                         <h3 id="targetUsername" class="font-bold text-white text-sm">اختر مستخدماً</h3>
-                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة فورية مشفرة</p>
+                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة مشفرة</p>
                     </div>
                 </div>
 
@@ -85,7 +87,7 @@
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-500 my-auto pt-20">اختر صديقاً من القائمة لبدء الشاشة الفورية والوسائط ⚡</div>
+                <div class="text-center text-xs text-slate-500 my-auto pt-20">اختر صديقاً أو أنشئ مجموعة من زر (+) ⚡</div>
             </div>
 
             <div class="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/60">
@@ -100,7 +102,7 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات (فيديو وصوت مع مايك وكاميرا) -->
+            <!-- شاشة المكالمات -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex flex-col items-center justify-between p-4 sm:p-6">
                 <div class="w-full flex-1 relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 flex items-center justify-center">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
@@ -122,20 +124,29 @@
         </div>
     </div>
 
-    <!-- نافذة الإعدادات -->
-    <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl">
-            <h2 class="text-xl font-black text-white mb-4">الإعدادات ⚙️</h2>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between p-3 bg-slate-800/80 rounded-2xl">
-                    <span class="text-sm font-bold text-slate-300">مظهر التطبيق:</span>
-                    <button onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2">
-                        <i id="themeIcon" class="fa-solid fa-moon"></i>
-                        <span id="themeText">الداكن</span>
-                    </button>
-                </div>
+    <!-- نافذة منيو زر (+) (إنشاء مجموعة أو دردشة جديدة) -->
+    <div id="actionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
+            <h2 class="text-xl font-black text-white">خيارات جديدة ✨</h2>
+            <button onclick="openNewChatModal()" class="w-full py-3 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 font-bold rounded-xl transition text-sm">
+                <i class="fa-solid fa-comment-dots ml-2"></i> إنشاء دردشة جديدة
+            </button>
+            <button onclick="openCreateGroupModal()" class="w-full py-3 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 font-bold rounded-xl transition text-sm">
+                <i class="fa-solid fa-users-rectangle ml-2"></i> إنشاء مجموعة جديدة
+            </button>
+            <button onclick="closeActionMenu()" class="w-full py-2 bg-slate-950 text-slate-400 hover:text-white text-xs rounded-xl">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- نافذة إنشاء مجموعة -->
+    <div id="groupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
+            <h2 class="text-xl font-black text-white">إنشاء مجموعة 👥</h2>
+            <input type="text" id="groupNameInput" placeholder="اسم المجموعة" class="w-full px-4 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white text-center text-sm focus:outline-none focus:border-cyan-400">
+            <div class="flex gap-2">
+                <button onclick="createGroupSubmit()" class="flex-1 py-3 bg-cyan-500 text-slate-950 font-bold rounded-xl text-sm">إنشاء</button>
+                <button onclick="closeGroupModal()" class="flex-1 py-3 bg-slate-800 text-slate-400 rounded-xl text-sm">إلغاء</button>
             </div>
-            <button onclick="closeSettings()" class="w-full mt-6 py-2.5 bg-slate-800 text-slate-400 font-bold rounded-xl text-xs hover:text-white transition">إغلاق</button>
         </div>
     </div>
 
@@ -143,18 +154,15 @@
         const socket = io();
         let myName = "", currentTarget = "", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
-        
-        // استرجاع رسائل المتصفح المحفوظة محلياً لضمان عدم ضياع أي رسالة
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
 
-        const rtcConfig = { 
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ] 
-        };
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-        // الدخول التلقائي عند فتح الصفحة أو إعادة الاتصال
+        // طلب إذن الإشعارات عند الدخول
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             if (savedUser) {
@@ -170,27 +178,27 @@
             }
         });
 
-        function openSettings() { document.getElementById('settingsModal').classList.remove('hidden'); }
-        function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
-
-        function toggleTheme() {
-            const html = document.documentElement;
-            const text = document.getElementById('themeText');
-            const icon = document.getElementById('themeIcon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                text.innerText = "الفاتح";
-                icon.className = "fa-solid fa-sun";
-            } else {
-                html.classList.add('dark');
-                text.innerText = "الداكن";
-                icon.className = "fa-solid fa-moon";
-            }
+        function openActionMenu() { document.getElementById('actionModal').classList.remove('hidden'); }
+        function closeActionMenu() { document.getElementById('actionModal').classList.add('hidden'); }
+        
+        function openNewChatModal() {
+            closeActionMenu();
+            alert("اختر الشخص مباشرة من القائمة الجانبية للمحادثة!");
         }
 
-        function showError(msg) {
-            const err = document.getElementById('authError');
-            err.innerText = msg; err.classList.remove('hidden');
+        function openCreateGroupModal() {
+            closeActionMenu();
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+        function closeGroupModal() { document.getElementById('groupModal').classList.add('hidden'); }
+
+        function createGroupSubmit() {
+            const gName = document.getElementById('groupNameInput').value.trim();
+            if (gName) {
+                socket.emit('create_group', { groupName: gName, members: [] });
+                document.getElementById('groupNameInput').value = '';
+                closeGroupModal();
+            }
         }
 
         function handleRegister() {
@@ -219,20 +227,33 @@
             location.reload();
         }
 
-        socket.on('update_online_users', list => {
+        socket.on('update_users_list', list => {
             const container = document.getElementById('usersList');
             container.innerHTML = '';
             list.filter(u => u.username !== myName).forEach(u => {
+                const dotColor = u.isOnline ? 'bg-emerald-500' : 'bg-slate-600';
                 container.innerHTML += `
                     <div onclick="selectUser('${u.username}', '${u.avatar}')" class="p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800/80 cursor-pointer flex items-center justify-between transition">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${u.avatar}</span>
                             <span class="font-bold text-sm text-slate-200">${u.username}</span>
                         </div>
-                        <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+                        <span class="w-2.5 h-2.5 ${dotColor} rounded-full"></span>
                     </div>
                 `;
             });
+        });
+
+        socket.on('group_created', group => {
+            const container = document.getElementById('usersList');
+            container.innerHTML += `
+                <div onclick="selectUser('${group.name}', '👥')" class="p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800/80 cursor-pointer flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">👥</span>
+                        <span class="font-bold text-sm text-cyan-400">${group.name} (مجموعة)</span>
+                    </div>
+                </div>
+            `;
         });
 
         function selectUser(username, avatar) {
@@ -282,11 +303,16 @@
             const partner = data.from === myName ? data.to : data.from;
             if (!chatStore[partner]) chatStore[partner] = [];
             chatStore[partner].push(data);
-            
-            // حفظ الرسائل محلياً لضمان عدم ضياعها أبداً
             localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
 
-            if (partner === currentTarget) renderMessages();
+            if (partner === currentTarget) {
+                renderMessages();
+            } else if (data.from !== myName) {
+                // إظهار إشعار سطح المكتب أو المتصفح عند وصول رسالة وأنت خارج المحادثة
+                if (Notification.permission === "granted") {
+                    new Notification(`رسالة جديدة من ${data.from}`, { body: data.message || "أرسل ملفاً" });
+                }
+            }
         });
 
         function renderMessages() {
@@ -295,20 +321,12 @@
             const list = chatStore[currentTarget] || [];
             list.forEach(m => {
                 const isMe = m.from === myName;
-                let content = '';
-                if (m.file) {
-                    if (m.fileType === 'video') {
-                        content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
-                    } else {
-                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover cursor-pointer hover:opacity-95" onclick="window.open('${m.file}')"/>`;
-                    }
-                } else {
-                    content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
-                }
+                let content = m.file ? (m.fileType === 'video' ? `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>` : `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover cursor-pointer" onclick="window.open('${m.file}')"/>`) : `<p class="text-sm leading-relaxed">${m.message}</p>`;
 
                 box.innerHTML += `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
                         <div class="max-w-[80%] sm:max-w-[70%] p-3 rounded-2xl ${isMe ? 'bg-cyan-500 text-slate-950 font-semibold rounded-br-none' : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700/50'}">
+                            ${!isMe ? `<span class="text-[10px] text-cyan-400 block font-bold mb-1">${m.from}</span>` : ''}
                             ${content}
                             <span class="text-[10px] opacity-60 block text-left mt-1">${m.timestamp}</span>
                         </div>
@@ -318,7 +336,6 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // --- إدارة المايك والكاميرا والمكالمات ---
         function toggleMicrophone() {
             if (localStream) {
                 const audioTrack = localStream.getAudioTracks()[0];
@@ -362,7 +379,7 @@
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
             } catch (err) {
-                alert("يرجى تفعيل صلاحيات الكاميرا والمايك في المتصفح!");
+                alert("يرجى تفعيل صلاحيات الكاميرا والمايك!");
                 endCall(false);
             }
         }
