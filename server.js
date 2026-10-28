@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
         io.emit('update_users_list', list);
     }
 
-    // إرسال رسالة (خاصة أو عامة للجميع)
+    // إرسال رسائل أو صوت أو صور أو GIFs
     socket.on('send_message', ({ to, message, file, fileType }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
@@ -76,15 +76,13 @@ io.on('connection', (socket) => {
             to: to || 'الجميع',
             message: message || '',
             file: file || null,
-            fileType: fileType || null,
+            fileType: fileType || null, // 'image', 'video', 'audio', 'gif'
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
         if (to === 'الجميع' || !to) {
-            // إرسال لجميع المتصلين في الدردشة العامة
             io.emit('receive_message', payload);
         } else {
-            // إرسال خاص
             const recipientSocketId = onlineUsers.get(to);
             if (recipientSocketId) {
                 io.to(recipientSocketId).emit('receive_message', payload);
