@@ -16,7 +16,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 const usersDB = new Map(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
-const groupsDB = new Map(); // تخزين المجموعات
 
 io.on('connection', (socket) => {
 
@@ -67,42 +66,30 @@ io.on('connection', (socket) => {
         io.emit('update_users_list', list);
     }
 
-    // إنشاء مجموعة جديدة
-    socket.on('create_group', ({ groupName, members }) => {
-        const creator = socketToUser.get(socket.id);
-        if (!groupName || groupsDB.has(groupName)) return;
-
-        const groupData = { name: groupName, members: [...members, creator], creator };
-        groupsDB.set(groupName, groupData);
-
-        // إشعار كل الأعضاء بالانضمام للمجموعة
-        groupData.members.forEach(member => {
-            const memberSocketId = onlineUsers.get(member);
-            if (memberSocketId) {
-                io.to(memberSocketId).emit('group_created', groupData);
-            }
-        });
-    });
-
-    // رسائل خاصة
-    socket.on('send_private_msg', ({ to, message, file, fileType }) => {
+    // إرسال رسالة (خاصة أو عامة للجميع)
+    socket.on('send_message', ({ to, message, file, fileType }) => {
         const sender = socketToUser.get(socket.id);
-        const recipientSocketId = onlineUsers.get(to);
+        if (!sender) return;
 
-        if (sender) {
-            const payload = {
-                from: sender,
-                to: to,
-                message: message || '',
-                file: file || null,
-                fileType: fileType || null,
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
+        const payload = {
+            from: sender,
+            to: to || 'الجميع',
+            message: message || '',
+            file: file || null,
+            fileType: fileType || null,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
 
+        if (to === 'الجميع' || !to) {
+            // إرسال لجميع المتصلين في الدردشة العامة
+            io.emit('receive_message', payload);
+        } else {
+            // إرسال خاص
+            const recipientSocketId = onlineUsers.get(to);
             if (recipientSocketId) {
-                io.to(recipientSocketId).emit('receive_private_msg', payload);
+                io.to(recipientSocketId).emit('receive_message', payload);
             }
-            socket.emit('receive_private_msg', payload);
+            socket.emit('receive_message', payload);
         }
     });
 
@@ -147,4 +134,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 السيرفر يعمل بكفاءة على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger يعمل بكفاءة على المنفذ: ${PORT}`));
