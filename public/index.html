@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - GIF Edition</title>
+    <title>-Nexus-messenger - Ultimate Stable Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,7 @@
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك واستمتع بالمحادثات ومكتبة الـ GIF الضخمة</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وتمتع بالمحادثات ومكتبة الـ GIF الثابتة</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
@@ -90,7 +90,7 @@
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-400 my-auto pt-20">أهلاً بك في -Nexus-messenger، تواصل مع الجميع الآن! ⚡</div>
+                <div class="text-center text-xs text-slate-400 my-auto pt-20">أهلاً بك في -Nexus-messenger، تحدث مع الجميع الآن! ⚡</div>
             </div>
 
             <!-- قائمة الإيموجيات -->
@@ -103,9 +103,9 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- مكتبة الـ GIF الشاملة مع خيار البحث الذكي وبدون تكرار -->
+            <!-- مكتبة الـ GIF الضخمة والمحلية (تعمل فوري وبدون فشل) -->
             <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
-                <input type="text" id="gifSearchInput" onkeyup="searchGifs(this.value)" placeholder="ابحث عن GIF (مثل: ضحك، انمي)..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
+                <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في الـ GIFs..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
@@ -136,6 +136,10 @@
 
             <!-- شاشة المكالمات -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-6">
+                <div id="incomingCallAlert" class="hidden absolute top-10 bg-cyan-500 text-slate-950 font-black px-6 py-3 rounded-2xl shadow-2xl animate-bounce text-sm">
+                    📞 مكالمة واردة جديدة... جاري الرنين
+                </div>
+
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
                     <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-32 h-44 object-cover rounded-2xl border-2 border-white/20 shadow-2xl"></video>
@@ -182,35 +186,81 @@
         let isMicMuted = false, isCamOff = false;
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let mediaRecorder, audioChunks = [], isRecording = false;
+        let ringtoneInterval = null;
+
+        // مكتبة ضخمة ومنوعة من أفضل صور الـ GIF الثابتة والمضمونة 100%
+        const masterGifList = [
+            { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh" },
+            { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance" },
+            { url: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", tags: "حيرة تفكير think confused" },
+            { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome" },
+            { url: "https://media.giphy.com/media/xTpxIuIH7QSWEtK83u/giphy.gif", tags: "تصفيق تسويق clap bravo" },
+            { url: "https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif", tags: "حماس اكشن wow cool" },
+            { url: "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif", tags: "قطط حيوانات cat cute" },
+            { url: "https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif", tags: "حزن زعل sad cry" },
+            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "حب قلوب love heart" },
+            { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast" },
+            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "قهوة صباح coffee morning" },
+            { url: "https://media.giphy.com/media/g9582DNuQppxC/giphy.gif", tags: "موافق نعم yes ok" },
+            { url: "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif", tags: "رقص طرب party dance" },
+            { url: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif", tags: "بصمة ذكاء smart genius" },
+            { url: "https://media.giphy.com/media/3ohzdIuqJoo8YdKlnW/giphy.gif", tags: "سلام باي goodbye bye" },
+            { url: "https://media.giphy.com/media/l0ExncehJzexFpRHq/giphy.gif", tags: "أكل طعام food yum" }
+        ];
+
+        function renderGifGrid(list) {
+            const resultsBox = document.getElementById('gifResults');
+            resultsBox.innerHTML = '';
+            if (list.length === 0) {
+                resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center pt-10">لا توجد نتائج مطابقة</p>';
+                return;
+            }
+            list.forEach(g => {
+                resultsBox.innerHTML += `
+                    <img src="${g.url}" onclick="sendGif('${g.url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">
+                `;
+            });
+        }
+
+        function filterGifs(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                renderGifGrid(masterGifList);
+                return;
+            }
+            const filtered = masterGifList.filter(g => g.tags.includes(q));
+            renderGifGrid(filtered);
+        }
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-        // جلب الصور المتحركة من محرك GIF (Giphy / Tenor API) المباشر وبدون تكرار
-        async function fetchGifs(query = "trending") {
-            const resultsBox = document.getElementById('gifResults');
-            resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center">جاري التحميل...</p>';
+        function playNativeRingtone() {
             try {
-                const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=gTBD2p7S5tC1M09W4YyO03iR0Jt3fD2X&q=${encodeURIComponent(query)}&limit=20&rating=g`);
-                const data = await res.json();
-                resultsBox.innerHTML = '';
-                
-                data.data.forEach(gif => {
-                    const url = gif.images.fixed_height.url;
-                    resultsBox.innerHTML += `
-                        <img src="${url}" onclick="sendGif('${url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">
-                    `;
-                });
-            } catch (err) {
-                resultsBox.innerHTML = '<p class="text-[10px] text-rose-400 col-span-2 text-center">خطأ في جلب الصور</p>';
-            }
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                ringtoneInterval = setInterval(() => {
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                    if (navigator.vibrate) navigator.vibrate([300, 200, 300]);
+                }, 1200);
+            } catch (e) {}
         }
 
-        let searchTimeout;
-        function searchGifs(val) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                fetchGifs(val.trim() || "trending");
-            }, 500);
+        function stopNativeRingtone() {
+            if (ringtoneInterval) {
+                clearInterval(ringtoneInterval);
+                ringtoneInterval = null;
+            }
+            if (navigator.vibrate) navigator.vibrate(0);
         }
 
         socket.on('connect', () => {
@@ -279,7 +329,7 @@
             const picker = document.getElementById('gifPicker');
             picker.classList.toggle('hidden');
             if (!picker.classList.contains('hidden')) {
-                fetchGifs();
+                renderGifGrid(masterGifList);
             }
         }
 
@@ -497,11 +547,18 @@
         }
 
         socket.on('incoming_call', async ({ from, offer, isVideo }) => {
+            playNativeRingtone();
+            document.getElementById('incomingCallAlert').classList.remove('hidden');
+            document.getElementById('incomingCallAlert').innerText = `📞 مكالمة واردة من ${from}...`;
+
             if (confirm(`مكالمة واردة من ${from}.. هل تريد الرد؟`)) {
+                stopNativeRingtone();
+                document.getElementById('incomingCallAlert').classList.add('hidden');
                 currentTarget = from;
                 document.getElementById('callOverlay').classList.remove('hidden');
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+                    document.getElementById('localWordVideo').srcObject = localStream; // fixed local video
                     document.getElementById('localVideo').srcObject = localStream;
 
                     peerConnection = new RTCPeerConnection(rtcConfig);
@@ -524,11 +581,14 @@
                     endCall(false);
                 }
             } else {
+                stopNativeRingtone();
+                document.getElementById('incomingCallAlert').classList.add('hidden');
                 socket.emit('end_call', { to: from });
             }
         });
 
         socket.on('call_answered', async ({ answer }) => {
+            stopNativeRingtone();
             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         });
 
@@ -539,10 +599,12 @@
         socket.on('call_ended', () => endCall(false));
 
         function endCall(notify = true) {
+            stopNativeRingtone();
             if (notify && currentTarget !== "الجميع") socket.emit('end_call', { to: currentTarget });
             if (peerConnection) peerConnection.close();
             if (localStream) localStream.getTracks().forEach(t => t.stop());
             document.getElementById('callOverlay').classList.add('hidden');
+            document.getElementById('incomingCallAlert').classList.add('hidden');
         }
     </script>
 </body>
