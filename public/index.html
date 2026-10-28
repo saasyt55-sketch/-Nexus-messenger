@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - الأسطوري الشامل</title>
+    <title>-Nexus-messenger - النسخة الشاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,7 @@
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-slate-900 border border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-400 text-xs mb-6">سجل دخولك واستمتع بالمحادثات والمكالمات الفورية</p>
+            <p class="text-slate-400 text-xs mb-6">سجل دخولك وانضم إلى الدردشة الشاملة والمكالمات الفورية</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white text-center text-sm focus:outline-none focus:border-cyan-400">
@@ -44,13 +44,7 @@
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-950 border-l border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300">
             <div>
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-800 pb-3">
-                    <div class="flex items-center gap-2">
-                        <h2 class="font-black text-cyan-400">المحادثات</h2>
-                        <!-- زر الإضافة (+) -->
-                        <button onclick="openActionMenu()" title="إضافة دردشة أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-bold flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
-                    </div>
+                    <h2 class="font-black text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-comments"></i> الدردشات</h2>
                     <div class="flex items-center gap-2">
                         <button onclick="logout()" title="خروج" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 hover:text-white flex items-center justify-center transition">
                             <i class="fa-solid fa-right-from-bracket text-xs"></i>
@@ -58,7 +52,17 @@
                         <span id="myUsername" class="text-xs bg-cyan-950 text-cyan-300 px-3 py-1 rounded-full font-bold">...</span>
                     </div>
                 </div>
-                <div id="usersList" class="space-y-2 overflow-y-auto max-h-[78vh] custom-scrollbar"></div>
+
+                <!-- زر الدردشة العامة (للجميع) -->
+                <div onclick="selectGlobalChat()" class="p-3 mb-3 rounded-2xl bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/30 cursor-pointer flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🌍</span>
+                        <span class="font-bold text-sm text-cyan-300">الدردشة العامة (للجميع)</span>
+                    </div>
+                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                </div>
+
+                <div id="usersList" class="space-y-2 overflow-y-auto max-h-[68vh] custom-scrollbar"></div>
             </div>
         </div>
 
@@ -69,10 +73,10 @@
                     <button onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-cyan-400">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg">💬</div>
+                    <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg">🌍</div>
                     <div>
-                        <h3 id="targetUsername" class="font-bold text-white text-sm">اختر مستخدماً</h3>
-                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة مشفرة</p>
+                        <h3 id="targetUsername" class="font-bold text-white text-sm">الدردشة العامة (للجميع)</h3>
+                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة مفتوحة للكل</p>
                     </div>
                 </div>
 
@@ -87,22 +91,42 @@
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-500 my-auto pt-20">اختر صديقاً أو أنشئ مجموعة من زر (+) ⚡</div>
+                <div class="text-center text-xs text-slate-500 my-auto pt-20">أهلاً بك في -Nexus-messenger، تحدث مع الجميع الآن! ⚡</div>
+            </div>
+
+            <!-- قائمة الإيموجيات المنسدلة -->
+            <div id="emojiPicker" class="hidden absolute bottom-20 left-4 bg-slate-900 border border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-6 gap-2 z-30">
+                <span onclick="insertEmoji('😀')" class="cursor-pointer text-xl hover:scale-125 transition">😀</span>
+                <span onclick="insertEmoji('😂')" class="cursor-pointer text-xl hover:scale-125 transition">😂</span>
+                <span onclick="insertEmoji('❤️')" class="cursor-pointer text-xl hover:scale-125 transition">❤️</span>
+                <span onclick="insertEmoji('🔥')" class="cursor-pointer text-xl hover:scale-125 transition">🔥</span>
+                <span onclick="insertEmoji('👍')" class="cursor-pointer text-xl hover:scale-125 transition">👍</span>
+                <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
+                <span onclick="insertEmoji('🎉')" class="cursor-pointer text-xl hover:scale-125 transition">🎉</span>
+                <span onclick="insertEmoji('😎')" class="cursor-pointer text-xl hover:scale-125 transition">😎</span>
+                <span onclick="insertEmoji('🚀')" class="cursor-pointer text-xl hover:scale-125 transition">🚀</span>
+                <span onclick="insertEmoji('⚡')" class="cursor-pointer text-xl hover:scale-125 transition">⚡</span>
+                <span onclick="insertEmoji('😢')" class="cursor-pointer text-xl hover:scale-125 transition">😢</span>
+                <span onclick="insertEmoji('🙏')" class="cursor-pointer text-xl hover:scale-125 transition">🙏</span>
             </div>
 
             <div class="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/60">
-                <form onsubmit="sendPrivateMessage(event)" class="flex items-center gap-2">
-                    <label for="fileInput" class="cursor-pointer w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 transition">
+                <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
+                    <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 transition" title="إيموجي">
+                        <i class="fa-regular fa-face-smile text-lg"></i>
+                    </button>
+
+                    <label for="fileInput" class="cursor-pointer w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 transition" title="رفع ملف">
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
                     <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="previewAndSendFile(event)">
 
-                    <input type="text" id="msgInput" placeholder="اكتب رسالتك..." class="flex-1 px-4 py-3 bg-slate-900 rounded-xl border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500">
+                    <input type="text" id="msgInput" placeholder="اكتب رسالتك للجميع..." class="flex-1 px-4 py-3 bg-slate-900 rounded-xl border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500">
                     <button type="submit" class="px-5 sm:px-6 py-3 bg-cyan-500 active:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition">إرسال</button>
                 </form>
             </div>
 
-            <!-- شاشة المكالمات -->
+            <!-- شاشة المكالمات والمايك -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex flex-col items-center justify-between p-4 sm:p-6">
                 <div class="w-full flex-1 relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 flex items-center justify-center">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
@@ -124,44 +148,13 @@
         </div>
     </div>
 
-    <!-- نافذة منيو زر (+) (إنشاء مجموعة أو دردشة جديدة) -->
-    <div id="actionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
-            <h2 class="text-xl font-black text-white">خيارات جديدة ✨</h2>
-            <button onclick="openNewChatModal()" class="w-full py-3 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 font-bold rounded-xl transition text-sm">
-                <i class="fa-solid fa-comment-dots ml-2"></i> إنشاء دردشة جديدة
-            </button>
-            <button onclick="openCreateGroupModal()" class="w-full py-3 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 font-bold rounded-xl transition text-sm">
-                <i class="fa-solid fa-users-rectangle ml-2"></i> إنشاء مجموعة جديدة
-            </button>
-            <button onclick="closeActionMenu()" class="w-full py-2 bg-slate-950 text-slate-400 hover:text-white text-xs rounded-xl">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- نافذة إنشاء مجموعة -->
-    <div id="groupModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
-            <h2 class="text-xl font-black text-white">إنشاء مجموعة 👥</h2>
-            <input type="text" id="groupNameInput" placeholder="اسم المجموعة" class="w-full px-4 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white text-center text-sm focus:outline-none focus:border-cyan-400">
-            <div class="flex gap-2">
-                <button onclick="createGroupSubmit()" class="flex-1 py-3 bg-cyan-500 text-slate-950 font-bold rounded-xl text-sm">إنشاء</button>
-                <button onclick="closeGroupModal()" class="flex-1 py-3 bg-slate-800 text-slate-400 rounded-xl text-sm">إلغاء</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const socket = io();
-        let myName = "", currentTarget = "", peerConnection, localStream;
+        let myName = "", currentTarget = "الجميع", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-
-        // طلب إذن الإشعارات عند الدخول
-        if (Notification.permission !== "granted") {
-            Notification.requestPermission();
-        }
 
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
@@ -178,33 +171,10 @@
             }
         });
 
-        function openActionMenu() { document.getElementById('actionModal').classList.remove('hidden'); }
-        function closeActionMenu() { document.getElementById('actionModal').classList.add('hidden'); }
-        
-        function openNewChatModal() {
-            closeActionMenu();
-            alert("اختر الشخص مباشرة من القائمة الجانبية للمحادثة!");
-        }
-
-        function openCreateGroupModal() {
-            closeActionMenu();
-            document.getElementById('groupModal').classList.remove('hidden');
-        }
-        function closeGroupModal() { document.getElementById('groupModal').classList.add('hidden'); }
-
-        function createGroupSubmit() {
-            const gName = document.getElementById('groupNameInput').value.trim();
-            if (gName) {
-                socket.emit('create_group', { groupName: gName, members: [] });
-                document.getElementById('groupNameInput').value = '';
-                closeGroupModal();
-            }
-        }
-
         function handleRegister() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) showError(res.msg);
+                if (!res.success) alert(res.msg);
                 else alert(res.msg);
             });
         }
@@ -212,7 +182,7 @@
         function handleLogin() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             socket.emit('login', { username: u, password: p }, res => {
-                if (!res.success) showError(res.msg);
+                if (!res.success) alert(res.msg);
                 else {
                     myName = res.username;
                     localStorage.setItem('nexus_user', myName);
@@ -225,6 +195,18 @@
         function logout() {
             localStorage.removeItem('nexus_user');
             location.reload();
+        }
+
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.classList.toggle('hidden');
+        }
+
+        function insertEmoji(emoji) {
+            const input = document.getElementById('msgInput');
+            input.value += emoji;
+            document.getElementById('emojiPicker').classList.add('hidden');
+            input.focus();
         }
 
         socket.on('update_users_list', list => {
@@ -244,52 +226,44 @@
             });
         });
 
-        socket.on('group_created', group => {
-            const container = document.getElementById('usersList');
-            container.innerHTML += `
-                <div onclick="selectUser('${group.name}', '👥')" class="p-3 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800/80 cursor-pointer flex items-center justify-between transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">👥</span>
-                        <span class="font-bold text-sm text-cyan-400">${group.name} (مجموعة)</span>
-                    </div>
-                </div>
-            `;
-        });
+        function selectGlobalChat() {
+            currentTarget = "الجميع";
+            document.getElementById('targetUsername').innerText = "الدردشة العامة (للجميع)";
+            document.getElementById('targetAvatar').innerText = "🌍";
+            document.getElementById('callButtons').classList.add('hidden');
+            if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
+            renderMessages();
+        }
 
         function selectUser(username, avatar) {
             currentTarget = username;
             document.getElementById('targetUsername').innerText = username;
             document.getElementById('targetAvatar').innerText = avatar;
             document.getElementById('callButtons').classList.remove('hidden');
-
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebarPanel').classList.add('hidden');
-            }
+            if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
             renderMessages();
         }
 
-        function showSidebar() {
-            document.getElementById('sidebarPanel').classList.remove('hidden');
-        }
+        function showSidebar() { document.getElementById('sidebarPanel').classList.remove('hidden'); }
 
-        function sendPrivateMessage(e) {
+        function sendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('msgInput');
-            if (input.value.trim() && currentTarget) {
-                socket.emit('send_private_msg', { to: currentTarget, message: input.value.trim() });
+            if (input.value.trim()) {
+                socket.emit('send_message', { to: currentTarget === "الجميع" ? null : currentTarget, message: input.value.trim() });
                 input.value = '';
             }
         }
 
         function previewAndSendFile(event) {
             const file = event.target.files[0];
-            if (!file || !currentTarget) return;
+            if (!file) return;
 
             const isVideo = file.type.startsWith('video/');
             const reader = new FileReader();
             reader.onload = function(e) {
-                socket.emit('send_private_msg', { 
-                    to: currentTarget, 
+                socket.emit('send_message', { 
+                    to: currentTarget === "الجميع" ? null : currentTarget, 
                     message: '', 
                     file: e.target.result,
                     fileType: isVideo ? 'video' : 'image'
@@ -299,20 +273,19 @@
             event.target.value = '';
         }
 
-        socket.on('receive_private_msg', data => {
-            const partner = data.from === myName ? data.to : data.from;
-            if (!chatStore[partner]) chatStore[partner] = [];
-            chatStore[partner].push(data);
+        socket.on('receive_message', data => {
+            let key = currentTarget;
+            if (data.to === "الجميع") {
+                key = "الجميع";
+            } else {
+                key = data.from === myName ? data.to : data.from;
+            }
+
+            if (!chatStore[key]) chatStore[key] = [];
+            chatStore[key].push(data);
             localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
 
-            if (partner === currentTarget) {
-                renderMessages();
-            } else if (data.from !== myName) {
-                // إظهار إشعار سطح المكتب أو المتصفح عند وصول رسالة وأنت خارج المحادثة
-                if (Notification.permission === "granted") {
-                    new Notification(`رسالة جديدة من ${data.from}`, { body: data.message || "أرسل ملفاً" });
-                }
-            }
+            if (key === currentTarget) renderMessages();
         });
 
         function renderMessages() {
@@ -379,7 +352,7 @@
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
             } catch (err) {
-                alert("يرجى تفعيل صلاحيات الكاميرا والمايك!");
+                alert("يرجى تفعيل صلاحيات الكاميرا والمايك من إعدادات المتصفح!");
                 endCall(false);
             }
         }
@@ -408,7 +381,7 @@
                     await peerConnection.setLocalDescription(answer);
                     socket.emit('answer_call', { to: from, answer });
                 } catch (err) {
-                    alert("تعذر فتح المايك أو الكاميرا للرد!");
+                    alert("تعذر فتح المايك أو الكاميرا!");
                     endCall(false);
                 }
             }
@@ -425,7 +398,7 @@
         socket.on('call_ended', () => endCall(false));
 
         function endCall(notify = true) {
-            if (notify && currentTarget) socket.emit('end_call', { to: currentTarget });
+            if (notify && currentTarget !== "الجميع") socket.emit('end_call', { to: currentTarget });
             if (peerConnection) peerConnection.close();
             if (localStream) localStream.getTracks().forEach(t => t.stop());
             document.getElementById('callOverlay').classList.add('hidden');
