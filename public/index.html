@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - Native Ringtone Edition</title>
+    <title>-Nexus-messenger - GIF Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,7 @@
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وتمتع بالمحادثات والمكالمات الحقيقية</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك واستمتع بالمحادثات ومكتبة الـ GIF الضخمة</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
@@ -53,7 +53,6 @@
                     </div>
                 </div>
 
-                <!-- الدردشة العامة -->
                 <div onclick="selectGlobalChat()" class="p-3 mb-3 rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-500/30 cursor-pointer flex items-center justify-between transition">
                     <div class="flex items-center gap-3">
                         <span class="text-xl">🌍</span>
@@ -91,7 +90,7 @@
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-400 my-auto pt-20">أهلاً بك في -Nexus-messenger، تحدث مع الجميع الآن! ⚡</div>
+                <div class="text-center text-xs text-slate-400 my-auto pt-20">أهلاً بك في -Nexus-messenger، تواصل مع الجميع الآن! ⚡</div>
             </div>
 
             <!-- قائمة الإيموجيات -->
@@ -104,17 +103,13 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- قائمة GIFs -->
-            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-2 gap-2 z-35 w-64 max-h-60 overflow-y-auto custom-scrollbar">
-                <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
-                <img src="https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
-                <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
-                <img src="https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
-                <img src="https://media.giphy.com/media/xTpxIuIH7QSWEtK83u/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
-                <img src="https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif" onclick="sendGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80">
+            <!-- مكتبة الـ GIF الشاملة مع خيار البحث الذكي وبدون تكرار -->
+            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
+                <input type="text" id="gifSearchInput" onkeyup="searchGifs(this.value)" placeholder="ابحث عن GIF (مثل: ضحك، انمي)..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
+                <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
-            <!-- شريط الكتابة والتحكم -->
+            <!-- شريط الكتابة -->
             <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
                     <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition" title="إيموجي">
@@ -139,12 +134,8 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات (مع نغمة رنين حقيقية واهتزاز) -->
+            <!-- شاشة المكالمات -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-6">
-                <div id="incomingCallAlert" class="hidden absolute top-10 bg-cyan-500 text-slate-950 font-black px-6 py-3 rounded-2xl shadow-2xl animate-bounce text-sm">
-                    📞 مكالمة واردة جديدة... جاري الرنين
-                </div>
-
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
                     <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-32 h-44 object-cover rounded-2xl border-2 border-white/20 shadow-2xl"></video>
@@ -165,81 +156,61 @@
         </div>
     </div>
 
-    <!-- نافذة الإعدادات الشاملة -->
+    <!-- نافذة الإعدادات -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات التطبيق ⚙️</h2>
             
             <div class="space-y-3 text-right">
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق (الثيم):</span>
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق:</span>
                     <button onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
                         <i id="themeIcon" class="fa-solid fa-moon"></i>
                         <span id="themeText">الداكن</span>
                     </button>
                 </div>
-
-                <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">إشعارات المتصفح:</span>
-                    <button onclick="requestNotificationPermission()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl text-xs">تفعيل</button>
-                </div>
-
-                <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">حفظ المحادثات:</span>
-                    <span class="text-xs text-emerald-500 font-bold">مفعل (محلياً)</span>
-                </div>
             </div>
 
-            <button onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج من الحساب</button>
+            <button onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج</button>
             <button onclick="closeSettings()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs">إغلاق</button>
         </div>
     </div>
 
-    <!-- مولد صوت النغمة والاهتزاز الحقيقي للمكالمات -->
     <script>
         const socket = io();
         let myName = "", currentTarget = "الجميع", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
-
         let mediaRecorder, audioChunks = [], isRecording = false;
-        let ringtoneInterval = null;
+
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-        // مولد صوت الرنين الحقيقي (توليد نغمة اتصال ديناميكية عبر المتصفح)
-        function playNativeRingtone() {
+        // جلب الصور المتحركة من محرك GIF (Giphy / Tenor API) المباشر وبدون تكرار
+        async function fetchGifs(query = "trending") {
+            const resultsBox = document.getElementById('gifResults');
+            resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center">جاري التحميل...</p>';
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                ringtoneInterval = setInterval(() => {
-                    if (audioCtx.state === 'suspended') audioCtx.resume();
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, audioCtx.currentTime); // تردد نغمة الرنين القياسية
-                    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-
-                    // تشغيل الاهتزاز إذا كان الجهاز جوالاً (آيفون أو أندرويد)
-                    if (navigator.vibrate) {
-                        navigator.vibrate([300, 200, 300]);
-                    }
-                }, 1200);
-            } catch (e) {
-                console.log("AudioContext blocked");
+                const res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=gTBD2p7S5tC1M09W4YyO03iR0Jt3fD2X&q=${encodeURIComponent(query)}&limit=20&rating=g`);
+                const data = await res.json();
+                resultsBox.innerHTML = '';
+                
+                data.data.forEach(gif => {
+                    const url = gif.images.fixed_height.url;
+                    resultsBox.innerHTML += `
+                        <img src="${url}" onclick="sendGif('${url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">
+                    `;
+                });
+            } catch (err) {
+                resultsBox.innerHTML = '<p class="text-[10px] text-rose-400 col-span-2 text-center">خطأ في جلب الصور</p>';
             }
         }
 
-        function stopNativeRingtone() {
-            if (ringtoneInterval) {
-                clearInterval(ringtoneInterval);
-                ringtoneInterval = null;
-            }
-            if (navigator.vibrate) navigator.vibrate(0);
+        let searchTimeout;
+        function searchGifs(val) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchGifs(val.trim() || "trending");
+            }, 500);
         }
 
         socket.on('connect', () => {
@@ -275,12 +246,6 @@
             }
         }
 
-        function requestNotificationPermission() {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") alert("تم تفعيل الإشعارات بنجاح!");
-            });
-        }
-
         function handleRegister() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => alert(res.msg));
@@ -311,7 +276,11 @@
 
         function toggleGifPicker() {
             document.getElementById('emojiPicker').classList.add('hidden');
-            document.getElementById('gifPicker').classList.toggle('hidden');
+            const picker = document.getElementById('gifPicker');
+            picker.classList.toggle('hidden');
+            if (!picker.classList.contains('hidden')) {
+                fetchGifs();
+            }
         }
 
         function insertEmoji(emoji) {
@@ -528,13 +497,7 @@
         }
 
         socket.on('incoming_call', async ({ from, offer, isVideo }) => {
-            playNativeRingtone(); // تشغيل نغمة الرنين والاهتزاز تلقائياً عند قدوم المكالمة
-            document.getElementById('incomingCallAlert').classList.remove('hidden');
-            document.getElementById('incomingCallAlert').innerText = `📞 مكالمة واردة من ${from}...`;
-
             if (confirm(`مكالمة واردة من ${from}.. هل تريد الرد؟`)) {
-                stopNativeRingtone();
-                document.getElementById('incomingCallAlert').classList.add('hidden');
                 currentTarget = from;
                 document.getElementById('callOverlay').classList.remove('hidden');
                 try {
@@ -561,14 +524,11 @@
                     endCall(false);
                 }
             } else {
-                stopNativeRingtone();
-                document.getElementById('incomingCallAlert').classList.add('hidden');
                 socket.emit('end_call', { to: from });
             }
         });
 
         socket.on('call_answered', async ({ answer }) => {
-            stopNativeRingtone();
             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         });
 
@@ -579,12 +539,10 @@
         socket.on('call_ended', () => endCall(false));
 
         function endCall(notify = true) {
-            stopNativeRingtone();
             if (notify && currentTarget !== "الجميع") socket.emit('end_call', { to: currentTarget });
             if (peerConnection) peerConnection.close();
             if (localStream) localStream.getTracks().forEach(t => t.stop());
             document.getElementById('callOverlay').classList.add('hidden');
-            document.getElementById('incomingCallAlert').classList.add('hidden');
         }
     </script>
 </body>
