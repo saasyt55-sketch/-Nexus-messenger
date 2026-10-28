@@ -1,7 +1,7 @@
 {
   "name": "nexus-messenger",
-  "version": "2.0.0",
-  "description": "Nexus Messenger Ultimate Edition",
+  "version": "2.1.0",
+  "description": "Nexus Messenger Ultimate Edition with Voice & GIFs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
