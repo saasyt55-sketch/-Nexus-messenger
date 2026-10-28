@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - النسخة الشاملة</title>
+    <title>-Nexus-messenger - الأسطوري الشامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,7 @@
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-slate-900 border border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-400 text-xs mb-6">سجل دخولك وانضم إلى الدردشة الشاملة والمكالمات الفورية</p>
+            <p class="text-slate-400 text-xs mb-6">سجل دخولك وانضم للدردشة والمكالمات الفورية</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-800 rounded-xl border border-slate-700 text-white text-center text-sm focus:outline-none focus:border-cyan-400">
@@ -91,10 +91,10 @@
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-500 my-auto pt-20">أهلاً بك في -Nexus-messenger، تحدث مع الجميع الآن! ⚡</div>
+                <div class="text-center text-xs text-slate-500 my-auto pt-20">أهلاً بك في -Nexus-messenger، تواصل مع الجميع الآن! ⚡</div>
             </div>
 
-            <!-- قائمة الإيموجيات المنسدلة -->
+            <!-- قائمة الإيموجيات العادية -->
             <div id="emojiPicker" class="hidden absolute bottom-20 left-4 bg-slate-900 border border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-6 gap-2 z-30">
                 <span onclick="insertEmoji('😀')" class="cursor-pointer text-xl hover:scale-125 transition">😀</span>
                 <span onclick="insertEmoji('😂')" class="cursor-pointer text-xl hover:scale-125 transition">😂</span>
@@ -102,26 +102,40 @@
                 <span onclick="insertEmoji('🔥')" class="cursor-pointer text-xl hover:scale-125 transition">🔥</span>
                 <span onclick="insertEmoji('👍')" class="cursor-pointer text-xl hover:scale-125 transition">👍</span>
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
-                <span onclick="insertEmoji('🎉')" class="cursor-pointer text-xl hover:scale-125 transition">🎉</span>
-                <span onclick="insertEmoji('😎')" class="cursor-pointer text-xl hover:scale-125 transition">😎</span>
-                <span onclick="insertEmoji('🚀')" class="cursor-pointer text-xl hover:scale-125 transition">🚀</span>
-                <span onclick="insertEmoji('⚡')" class="cursor-pointer text-xl hover:scale-125 transition">⚡</span>
-                <span onclick="insertEmoji('😢')" class="cursor-pointer text-xl hover:scale-125 transition">😢</span>
-                <span onclick="insertEmoji('🙏')" class="cursor-pointer text-xl hover:scale-125 transition">🙏</span>
+            </div>
+
+            <!-- قائمة الصور المتحركة GIF -->
+            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-slate-900 border border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-2 gap-2 z-30 w-56 max-h-52 overflow-y-auto custom-scrollbar">
+                <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif" onclick="sendGif('https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif')" class="w-full h-20 object-cover rounded-xl cursor-pointer hover:opacity-80">
+                <img src="https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif" onclick="sendGif('https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif')" class="w-full h-20 object-cover rounded-xl cursor-pointer hover:opacity-80">
+                <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" onclick="sendGif('https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif')" class="w-full h-20 object-cover rounded-xl cursor-pointer hover:opacity-80">
+                <img src="https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif" onclick="sendGif('https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif')" class="w-full h-20 object-cover rounded-xl cursor-pointer hover:opacity-80">
             </div>
 
             <div class="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/60">
                 <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
+                    <!-- زر الإيموجي -->
                     <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 transition" title="إيموجي">
                         <i class="fa-regular fa-face-smile text-lg"></i>
                     </button>
 
+                    <!-- زر GIF -->
+                    <button type="button" onclick="toggleGifPicker()" class="w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 font-bold transition text-xs" title="GIF">
+                        GIF
+                    </button>
+
+                    <!-- زر رفع ملف (صور/فيديو) -->
                     <label for="fileInput" class="cursor-pointer w-11 h-11 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 rounded-xl flex items-center justify-center text-cyan-400 transition" title="رفع ملف">
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
                     <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="previewAndSendFile(event)">
 
-                    <input type="text" id="msgInput" placeholder="اكتب رسالتك للجميع..." class="flex-1 px-4 py-3 bg-slate-900 rounded-xl border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500">
+                    <!-- زر تسجيل رسالة صوتية (مايك) -->
+                    <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" class="w-11 h-11 bg-slate-800 hover:bg-rose-600 hover:text-white rounded-xl flex items-center justify-center text-cyan-400 transition" title="تسجيل صوتي">
+                        <i class="fa-solid fa-microphone text-lg"></i>
+                    </button>
+
+                    <input type="text" id="msgInput" placeholder="اكتب رسالتك..." class="flex-1 px-4 py-3 bg-slate-900 rounded-xl border border-slate-800 text-white text-sm focus:outline-none focus:border-cyan-500">
                     <button type="submit" class="px-5 sm:px-6 py-3 bg-cyan-500 active:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition">إرسال</button>
                 </form>
             </div>
@@ -154,6 +168,11 @@
         let isMicMuted = false, isCamOff = false;
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
 
+        // متغيرات تسجيل الصوت (المايك)
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
         socket.on('connect', () => {
@@ -174,8 +193,7 @@
         function handleRegister() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) alert(res.msg);
-                else alert(res.msg);
+                alert(res.msg);
             });
         }
 
@@ -198,8 +216,13 @@
         }
 
         function toggleEmojiPicker() {
-            const picker = document.getElementById('emojiPicker');
-            picker.classList.toggle('hidden');
+            document.getElementById('gifPicker').classList.add('hidden');
+            document.getElementById('emojiPicker').classList.toggle('hidden');
+        }
+
+        function toggleGifPicker() {
+            document.getElementById('emojiPicker').classList.add('hidden');
+            document.getElementById('gifPicker').classList.toggle('hidden');
         }
 
         function insertEmoji(emoji) {
@@ -207,6 +230,56 @@
             input.value += emoji;
             document.getElementById('emojiPicker').classList.add('hidden');
             input.focus();
+        }
+
+        function sendGif(url) {
+            socket.emit('send_message', { 
+                to: currentTarget === "الجميع" ? null : currentTarget, 
+                message: '', 
+                file: url,
+                fileType: 'gif'
+            });
+            document.getElementById('gifPicker').classList.add('hidden');
+        }
+
+        // نظام تسجيل الرسائل الصوتية (المايك)
+        async function toggleVoiceRecording() {
+            const btn = document.getElementById('voiceRecordBtn');
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            socket.emit('send_message', { 
+                                to: currentTarget === "الجميع" ? null : currentTarget, 
+                                message: '', 
+                                file: reader.result,
+                                fileType: 'audio'
+                            });
+                        };
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
+                    btn.classList.remove('bg-slate-800', 'text-cyan-400');
+                } catch (err) {
+                    alert("تعذر الوصول إلى المايكروفون. تأكد من تفعيل الصلاحيات من المتصفح!");
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.classList.remove('bg-rose-600', 'text-white', 'animate-pulse');
+                btn.classList.add('bg-slate-800', 'text-cyan-400');
+            }
         }
 
         socket.on('update_users_list', list => {
@@ -275,11 +348,8 @@
 
         socket.on('receive_message', data => {
             let key = currentTarget;
-            if (data.to === "الجميع") {
-                key = "الجميع";
-            } else {
-                key = data.from === myName ? data.to : data.from;
-            }
+            if (data.to === "الجميع") key = "الجميع";
+            else key = data.from === myName ? data.to : data.from;
 
             if (!chatStore[key]) chatStore[key] = [];
             chatStore[key].push(data);
@@ -294,7 +364,21 @@
             const list = chatStore[currentTarget] || [];
             list.forEach(m => {
                 const isMe = m.from === myName;
-                let content = m.file ? (m.fileType === 'video' ? `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>` : `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover cursor-pointer" onclick="window.open('${m.file}')"/>`) : `<p class="text-sm leading-relaxed">${m.message}</p>`;
+                let content = '';
+
+                if (m.file) {
+                    if (m.fileType === 'video') {
+                        content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
+                    } else if (m.fileType === 'audio') {
+                        content = `<audio src="${m.file}" controls class="w-full max-w-xs"></audio>`;
+                    } else if (m.fileType === 'gif') {
+                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover"/>`;
+                    } else {
+                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover cursor-pointer" onclick="window.open('${m.file}')"/>`;
+                    }
+                } else {
+                    content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
+                }
 
                 box.innerHTML += `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
@@ -352,7 +436,7 @@
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
             } catch (err) {
-                alert("يرجى تفعيل صلاحيات الكاميرا والمايك من إعدادات المتصفح!");
+                alert("يرجى تفعيل صلاحيات الكاميرا والمايك من المتصفح!");
                 endCall(false);
             }
         }
