@@ -66,7 +66,6 @@ io.on('connection', (socket) => {
         io.emit('update_users_list', list);
     }
 
-    // إرسال رسائل أو صوت أو صور أو GIFs
     socket.on('send_message', ({ to, message, file, fileType }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
@@ -76,7 +75,7 @@ io.on('connection', (socket) => {
             to: to || 'الجميع',
             message: message || '',
             file: file || null,
-            fileType: fileType || null, // 'image', 'video', 'audio', 'gif'
+            fileType: fileType || null,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
@@ -91,7 +90,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // WebRTC Calls
+    // WebRTC Signaling
     socket.on('call_user', ({ to, offer, isVideo }) => {
         const caller = socketToUser.get(socket.id);
         const recipientSocketId = onlineUsers.get(to);
@@ -132,4 +131,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger يعمل بكفاءة على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger Native Call Edition يعمل على المنفذ: ${PORT}`));
