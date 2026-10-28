@@ -131,4 +131,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger Native Call Edition يعمل على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger يعمل بكفاءة على المنفذ: ${PORT}`));
