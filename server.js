@@ -13,39 +13,74 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); 
+const usersDB = new Map(); // username -> { email, passwordHash, avatar }
+const emailsDB = new Set(); // للتأكد من عدم تكرار الإيميل
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
 const friendRequests = new Map(); 
 
+// فحص صحة الإيميل
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
 io.on('connection', (socket) => {
 
-    socket.on('register', async ({ username, password, avatar }, callback) => {
-        const cleanName = username.trim();
-        if (!cleanName || !password) return callback({ success: false, msg: 'يرجى إدخال البيانات كاملة' });
+    // تسجيل ببريد حقيقي واسم مستخدم فريد
+    socket.on('register', async ({ email, username, password, avatar }, callback) => {
+        const cleanEmail = email ? email.trim().toLowerCase() : '';
+        const cleanName = username ? username.trim() : '';
         
+        if (!cleanEmail || !cleanName || !password) {
+            return callback({ success: false, msg: 'يرجى ملء جميع الحقول (الإيميل، اليوزر، كلمة المرور)' });
+        }
+
+        if (!isValidEmail(cleanEmail)) {
+            return callback({ success: false, msg: 'البريد الإلكتروني غير صالح، يرجى كتابة إيميل حقيقي صحيح' });
+        }
+
+        if (emailsDB.has(cleanEmail)) {
+            return callback({ success: false, msg: 'هذا البريد الإلكتروني مسجل مسبقاً بحساب آخر!' });
+        }
+
         if (usersDB.has(cleanName)) {
-            return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً، يرجى اختيار اسم آخر' });
+            return callback({ success: false, msg: 'اسم المستخدم (اليوزر) مستخدم مسبقاً، اختر اسماً آخر' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        usersDB.set(cleanName, { passwordHash: hashedPassword, avatar: avatar || '⚡' });
+        usersDB.set(cleanName, { email: cleanEmail, passwordHash: hashedPassword, avatar: avatar || '⚡' });
+        emailsDB.add(cleanEmail);
         friendRequests.set(cleanName, []);
-        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح!' });
+
+        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح بريدك الإلكتروني موثق!' });
     });
 
-    socket.on('login', async ({ username, password }, callback) => {
-        const cleanName = username.trim();
-        const user = usersDB.get(cleanName);
-        if (!user) return callback({ success: false, msg: 'المستخدم غير موجود' });
+    socket.on('login', async ({ identifier, password }, callback) => {
+        const cleanId = identifier ? identifier.trim() : '';
+        if (!cleanId || !password) return callback({ success: false, msg: 'يرجى إدخال بيانات الدخول' });
+
+        // يمكن الدخول باليوزر أو الإيميل
+        let targetUsername = cleanId;
+        if (cleanId.includes('@')) {
+            for (let [uname, udata] of usersDB.entries()) {
+                if (udata.email === cleanId.toLowerCase()) {
+                    targetUsername = uname;
+                    break;
+                }
+            }
+        }
+
+        const user = usersDB.get(targetUsername);
+        if (!user) return callback({ success: false, msg: 'المستخدم أو البريد غير موجود' });
 
         const match = await bcrypt.compare(password, user.passwordHash);
         if (!match) return callback({ success: false, msg: 'كلمة المرور غير صحيحة' });
 
-        onlineUsers.set(cleanName, socket.id);
-        socketToUser.set(socket.id, cleanName);
+        onlineUsers.set(targetUsername, socket.id);
+        socketToUser.set(socket.id, targetUsername);
 
-        callback({ success: true, username: cleanName, avatar: user.avatar });
+        callback({ success: true, username: targetUsername, avatar: user.avatar, email: user.email });
         broadcastOnlineStatus();
     });
 
@@ -55,7 +90,7 @@ io.on('connection', (socket) => {
         if (user) {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
-            callback({ success: true, username: cleanName, avatar: user.avatar });
+            callback({ success: true, username: cleanName, avatar: user.avatar, email: user.email });
             broadcastOnlineStatus();
         } else {
             callback({ success: false });
@@ -151,6 +186,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // WebRTC Signaling محسن ومستقر
     socket.on('call_user', ({ to, offer, isVideo }) => {
         const caller = socketToUser.get(socket.id);
         const recipientSocketId = onlineUsers.get(to);
@@ -191,4 +227,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v6.1 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v7.0 يعمل بنجاح على المنفذ: ${PORT}`));
