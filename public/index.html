@@ -16,7 +16,6 @@
         .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
         .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
         .filter-cyber { filter: hue-rotate(180deg) saturate(140%); }
-        .filter-bw { filter: grayscale(100%) contrast(120%); }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -35,8 +34,8 @@
             <p id="authError" class="text-rose-500 text-xs mt-3 hidden font-bold"></p>
 
             <div class="flex gap-3 mt-6">
-                <button onclick="handleLogin()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">تسجيل الدخول</button>
-                <button onclick="handleRegister()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition">حساب جديد</button>
+                <button type="button" onclick="handleLogin()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">تسجيل الدخول</button>
+                <button type="button" onclick="handleRegister()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition">حساب جديد</button>
             </div>
         </div>
     </div>
@@ -50,12 +49,12 @@
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                         <h2 class="font-black text-cyan-600 dark:text-cyan-400">الدردشات</h2>
-                        <button onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
+                        <button type="button" onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition">
+                        <button type="button" onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition">
                             <i class="fa-solid fa-gear text-xs"></i>
                         </button>
                         <span id="myUsername" class="text-xs bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 px-3 py-1 rounded-full font-bold">...</span>
@@ -72,7 +71,7 @@
         <div id="chatPanel" class="w-full flex-1 flex flex-col bg-slate-50/50 dark:bg-slate-900/40 relative h-full">
             <div id="chatHeader" class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <div class="flex items-center gap-3">
-                    <button onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+                    <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                     <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">💬</div>
@@ -83,10 +82,10 @@
                 </div>
 
                 <div id="callButtons" class="hidden flex items-center gap-2">
-                    <button onclick="startCall(false)" title="مكالمة صوتية" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
+                    <button type="button" onclick="startCall(false)" title="مكالمة صوتية" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-phone"></i>
                     </button>
-                    <button onclick="startCall(true)" title="مكالمة فيديو" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
+                    <button type="button" onclick="startCall(true)" title="مكالمة فيديو" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-video"></i>
                     </button>
                 </div>
@@ -145,20 +144,20 @@
                 </div>
                 
                 <div class="w-full max-w-xs flex justify-center gap-2 my-2 overflow-x-auto py-1">
-                    <button onclick="applySnapFilter('')" class="px-3 py-1 bg-neutral-800 text-white rounded-full text-xs border border-white/20">عادي</button>
-                    <button onclick="applySnapFilter('filter-smooth')" class="px-3 py-1 bg-amber-500/80 text-white rounded-full text-xs font-bold">✨ تجميل</button>
-                    <button onclick="applySnapFilter('filter-warm')" class="px-3 py-1 bg-orange-600/80 text-white rounded-full text-xs font-bold">🌅 دافئ</button>
-                    <button onclick="applySnapFilter('filter-cyber')" class="px-3 py-1 bg-cyan-600/80 text-white rounded-full text-xs font-bold">🤖 سايبر</button>
+                    <button type="button" onclick="applySnapFilter('')" class="px-3 py-1 bg-neutral-800 text-white rounded-full text-xs border border-white/20">عادي</button>
+                    <button type="button" onclick="applySnapFilter('filter-smooth')" class="px-3 py-1 bg-amber-500/80 text-white rounded-full text-xs font-bold">✨ تجميل</button>
+                    <button type="button" onclick="applySnapFilter('filter-warm')" class="px-3 py-1 bg-orange-600/80 text-white rounded-full text-xs font-bold">🌅 دافئ</button>
+                    <button type="button" onclick="applySnapFilter('filter-cyber')" class="px-3 py-1 bg-cyan-600/80 text-white rounded-full text-xs font-bold">🤖 سايبر</button>
                 </div>
 
                 <div class="mb-4 flex items-center gap-6 bg-neutral-900/80 backdrop-blur-md px-8 py-3 rounded-full border border-white/10 shadow-2xl">
-                    <button id="toggleMicBtn" onclick="toggleMicrophone()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
+                    <button type="button" id="toggleMicBtn" onclick="toggleMicrophone()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
                         <i id="micIcon" class="fa-solid fa-microphone text-emerald-400 text-base"></i>
                     </button>
-                    <button onclick="endCall()" class="w-14 h-14 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white text-xl shadow-xl shadow-rose-600/40">
+                    <button type="button" onclick="endCall()" class="w-14 h-14 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white text-xl shadow-xl shadow-rose-600/40">
                         <i class="fa-solid fa-phone-slash"></i>
                     </button>
-                    <button id="toggleCamBtn" onclick="toggleCamera()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
+                    <button type="button" id="toggleCamBtn" onclick="toggleCamera()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
                         <i id="camIcon" class="fa-solid fa-video text-emerald-400 text-base"></i>
                     </button>
                 </div>
@@ -166,20 +165,20 @@
         </div>
     </div>
 
-    <!-- نافذة زر (+) المتطورة مع زر طلبات الصداقة -->
+    <!-- نافذة زر (+) وزر طلبات الصداقة -->
     <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white">إضافة وخيارات ✨</h2>
             
             <div class="space-y-3">
-                <button onclick="openAddFriendSection()" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                <button type="button" onclick="openAddFriendSection()" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-user-plus"></i> إرسال طلب صداقة باليوزر
                 </button>
-                <button onclick="openFriendRequestsSection()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2 relative">
+                <button type="button" onclick="openFriendRequestsSection()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2 relative">
                     <i class="fa-solid fa-bell"></i> طلبات الصداقة الواردة
                     <span id="reqBadge" class="hidden absolute top-2 right-2 w-3 h-3 bg-rose-600 rounded-full animate-ping"></span>
                 </button>
-                <button onclick="openCreateGroupSection()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition flex items-center justify-center gap-2">
+                <button type="button" onclick="openCreateGroupSection()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users-rectangle"></i> إنشاء مجتمع / جروب
                 </button>
             </div>
@@ -187,7 +186,7 @@
             <!-- قسم إرسال طلب صداقة -->
             <div id="addFriendSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="searchUserInput" placeholder="اكتب يوزر الشخص بالظبط..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
-                <button onclick="sendFriendReq()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">إرسال طلب الصداقة</button>
+                <button type="button" onclick="sendFriendReq()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">إرسال طلب الصداقة</button>
                 <p id="searchUserResult" class="text-xs font-bold hidden"></p>
             </div>
 
@@ -200,10 +199,10 @@
             <!-- قسم إنشاء جروب -->
             <div id="createGroupSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="groupNameInput" placeholder="اسم المجتمع / الجروب..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
-                <button onclick="createNewGroup()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">إنشاء المجتمع</button>
+                <button type="button" onclick="createNewGroup()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">إنشاء المجتمع</button>
             </div>
 
-            <button onclick="closePlusMenu()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs">إغلاق</button>
+            <button type="button" onclick="closePlusMenu()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs">إغلاق</button>
         </div>
     </div>
 
@@ -214,14 +213,14 @@
             <div class="space-y-3 text-right">
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق:</span>
-                    <button onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
+                    <button type="button" onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
                         <i id="themeIcon" class="fa-solid fa-moon"></i>
                         <span id="themeText">الداكن</span>
                     </button>
                 </div>
             </div>
-            <button onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج</button>
-            <button onclick="closeSettings()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs">إغلاق</button>
+            <button type="button" onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج</button>
+            <button type="button" onclick="closeSettings()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs">إغلاق</button>
         </div>
     </div>
 
@@ -233,7 +232,6 @@
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
-        let mediaRecorder, audioChunks = [], isRecording = false;
 
         const masterGifList = [
             { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh" },
@@ -244,6 +242,7 @@
 
         function renderGifGrid(list) {
             const resultsBox = document.getElementById('gifResults');
+            if(!resultsBox) return;
             resultsBox.innerHTML = '';
             list.forEach(g => {
                 resultsBox.innerHTML += `<img src="${g.url}" onclick="sendGif('${g.url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">`;
@@ -259,7 +258,8 @@
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
         function applySnapFilter(filterClass) {
-            document.getElementById('localVideo').className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
+            const vid = document.getElementById('localVideo');
+            if(vid) vid.className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
         }
 
         socket.on('connect', () => {
@@ -280,11 +280,14 @@
         });
 
         function openPlusMenu() { 
-            document.getElementById('plusModal').classList.remove('hidden');
+            const modal = document.getElementById('plusModal');
+            if(modal) modal.classList.remove('hidden');
             fetchFriendRequests();
         }
+
         function closePlusMenu() { 
-            document.getElementById('plusModal').classList.add('hidden');
+            const modal = document.getElementById('plusModal');
+            if(modal) modal.classList.add('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
             document.getElementById('friendRequestsSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
@@ -310,13 +313,16 @@
         }
 
         function sendFriendReq() {
-            const target = document.getElementById('searchUserInput').value.trim();
+            const input = document.getElementById('searchUserInput');
             const resText = document.getElementById('searchUserResult');
+            if(!input || !resText) return;
+            const target = input.value.trim();
             if (!target) return;
 
             socket.emit('send_friend_request', { targetUsername: target }, res => {
                 resText.innerText = res.msg;
                 resText.className = res.success ? "text-xs font-bold text-emerald-500 block" : "text-xs font-bold text-rose-500 block";
+                resText.classList.remove('hidden');
             });
         }
 
@@ -324,17 +330,18 @@
             socket.emit('get_friend_requests', requests => {
                 const listContainer = document.getElementById('friendRequestsList');
                 const badge = document.getElementById('reqBadge');
+                if(!listContainer || !badge) return;
                 listContainer.innerHTML = '';
 
-                if (requests.length > 0) {
+                if (requests && requests.length > 0) {
                     badge.classList.remove('hidden');
                     requests.forEach(req => {
                         listContainer.innerHTML += `
                             <div class="flex items-center justify-between bg-slate-800 p-2.5 rounded-xl">
                                 <span class="text-xs font-bold text-white">${req.avatar} ${req.username}</span>
                                 <div class="flex gap-1">
-                                    <button onclick="respondReq('${req.username}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[10px]">قبول</button>
-                                    <button onclick="respondReq('${req.username}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold rounded-lg text-[10px]">رفض</button>
+                                    <button type="button" onclick="respondReq('${req.username}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[10px]">قبول</button>
+                                    <button type="button" onclick="respondReq('${req.username}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold rounded-lg text-[10px]">رفض</button>
                                 </div>
                             </div>
                         `;
@@ -347,7 +354,8 @@
         }
 
         socket.on('new_friend_request', () => {
-            document.getElementById('reqBadge').classList.remove('hidden');
+            const badge = document.getElementById('reqBadge');
+            if(badge) badge.classList.remove('hidden');
         });
 
         socket.on('friend_request_accepted', data => {
@@ -373,12 +381,15 @@
         }
 
         function createNewGroup() {
-            const name = document.getElementById('groupNameInput').value.trim();
+            const input = document.getElementById('groupNameInput');
+            if(!input) return;
+            const name = input.value.trim();
             if (name) {
                 mySavedContacts.push({ username: name, avatar: '👥', isGroup: true });
                 localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
                 renderContactsList();
                 closePlusMenu();
+                input.value = '';
             }
         }
 
@@ -389,6 +400,7 @@
 
         function renderContactsList() {
             const container = document.getElementById('myContactsList');
+            if(!container) return;
             container.innerHTML = '';
             if (mySavedContacts.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) لإرسال طلبات صداقة!</p>';
@@ -432,17 +444,18 @@
             const icon = document.getElementById('themeIcon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
-                text.innerText = "الفاتح";
-                icon.className = "fa-solid fa-sun";
+                if(text) text.innerText = "الفاتح";
+                if(icon) icon.className = "fa-solid fa-sun";
             } else {
                 html.classList.add('dark');
-                text.innerText = "الداكن";
-                icon.className = "fa-solid fa-moon";
+                if(text) text.innerText = "الداكن";
+                if(icon) icon.className = "fa-solid fa-moon";
             }
         }
 
         function showAuthError(msg) {
             const err = document.getElementById('authError');
+            if(!err) return;
             err.innerText = msg;
             err.classList.remove('hidden');
         }
@@ -544,6 +557,7 @@
 
         function renderMessages() {
             const box = document.getElementById('messagesBox');
+            if(!box) return;
             box.innerHTML = '';
             const list = chatStore[currentTarget] || [];
             list.forEach(m => {
@@ -588,4 +602,25 @@
                     peerConnection = new RTCPeerConnection(rtcConfig);
                     localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
                     peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
-                    peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { to: from, candidate: e
+                    peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { to: from, candidate: e.candidate }); };
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    socket.emit('answer_call', { to: from, answer });
+                } catch (err) { alert("تعذر الرد!"); endCall(false); }
+            } else { socket.emit('end_call', { to: from }); }
+        });
+
+        socket.on('call_answered', async ({ answer }) => { await peerConnection.setRemoteDescription(new RTCSessionDescription(answer)); });
+        socket.on('ice_candidate', async ({ candidate }) => { if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate)); });
+        socket.on('call_ended', () => endCall(false));
+
+        function endCall(notify = true) {
+            if (notify && currentTarget) socket.emit('end_call', { to: currentTarget });
+            if (peerConnection) peerConnection.close();
+            if (localStream) localStream.getTracks().forEach(t => t.stop());
+            document.getElementById('callOverlay').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
