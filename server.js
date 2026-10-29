@@ -19,14 +19,18 @@ const socketToUser = new Map();
 
 io.on('connection', (socket) => {
 
+    // تسجيل حساب مع التحقق الصارم من عدم تكرار الاسم
     socket.on('register', async ({ username, password, avatar }, callback) => {
         const cleanName = username.trim();
         if (!cleanName || !password) return callback({ success: false, msg: 'يرجى إدخال البيانات كاملة' });
-        if (usersDB.has(cleanName)) return callback({ success: false, msg: 'اسم المستخدم مسجل مسبقاً' });
+        
+        if (usersDB.has(cleanName)) {
+            return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً، يرجى اختيار اسم آخر' });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         usersDB.set(cleanName, { passwordHash: hashedPassword, avatar: avatar || '⚡' });
-        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح!' });
+        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الان' });
     });
 
     socket.on('login', async ({ username, password }, callback) => {
@@ -131,4 +135,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger Stable Edition يعمل على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger Pro يعمل على المنفذ: ${PORT}`));
