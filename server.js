@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const usersDB = new Map(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
-const friendRequests = new Map(); // تخزين طلبات الصداقة: username -> [list of senders]
+const friendRequests = new Map(); 
 
 io.on('connection', (socket) => {
 
@@ -62,7 +62,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // البحث عن مستخدم لإرسال طلب صداقة
     socket.on('send_friend_request', ({ targetUsername }, callback) => {
         const sender = socketToUser.get(socket.id);
         const cleanTarget = targetUsername.trim();
@@ -85,7 +84,6 @@ io.on('connection', (socket) => {
 
         requestsList.push(sender);
         
-        // إشعار المستخدم المستهدف فوراً إذا كان متصلاً
         const targetSocketId = onlineUsers.get(cleanTarget);
         if (targetSocketId) {
             io.to(targetSocketId).emit('new_friend_request', { from: sender });
@@ -94,7 +92,6 @@ io.on('connection', (socket) => {
         callback({ success: true, msg: 'تم إرسال طلب الصداقة بنجاح! ⏳' });
     });
 
-    // جلب طلبات الصداقة الواردة
     socket.on('get_friend_requests', (callback) => {
         const username = socketToUser.get(socket.id);
         if (!username) return callback([]);
@@ -106,7 +103,6 @@ io.on('connection', (socket) => {
         callback(requestsData);
     });
 
-    // الرد على طلب الصداقة (قبول أو رفض)
     socket.on('respond_friend_request', ({ fromUser, accept }, callback) => {
         const username = socketToUser.get(socket.id);
         if (!username) return;
@@ -155,7 +151,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // WebRTC Signaling
     socket.on('call_user', ({ to, offer, isVideo }) => {
         const caller = socketToUser.get(socket.id);
         const recipientSocketId = onlineUsers.get(to);
@@ -196,4 +191,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v6.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v6.1 يعمل بنجاح على المنفذ: ${PORT}`));
