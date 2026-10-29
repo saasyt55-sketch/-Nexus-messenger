@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - Ultimate Stable Edition</title>
+    <title>-Nexus-messenger - Pro Search Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,18 +17,18 @@
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- نافذة تسجيل الدخول -->
+    <!-- نافذة تسجيل الدخول والتسجيل -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وتمتع بالمحادثات ومكتبة الـ GIF الثابتة</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك أو أنشئ حساباً جديداً باسم فريد</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="password" id="authPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
             </div>
 
-            <p id="authError" class="text-rose-500 text-xs mt-2 hidden"></p>
+            <p id="authError" class="text-rose-500 text-xs mt-3 hidden font-bold"></p>
 
             <div class="flex gap-3 mt-6">
                 <button onclick="handleLogin()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">تسجيل الدخول</button>
@@ -43,13 +43,23 @@
         <!-- القائمة الجانبية -->
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300">
             <div>
-                <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <div class="flex items-center justify-between mb-3 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <h2 class="font-black text-cyan-600 dark:text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-comments"></i> الدردشات</h2>
                     <div class="flex items-center gap-2">
                         <button onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition">
                             <i class="fa-solid fa-gear text-xs"></i>
                         </button>
                         <span id="myUsername" class="text-xs bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 px-3 py-1 rounded-full font-bold">...</span>
+                    </div>
+                </div>
+
+                <!-- شريط البحث عن المستخدمين بالاسم -->
+                <div class="mb-3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-search text-xs"></i>
+                        </span>
+                        <input type="text" id="userSearchInput" onkeyup="searchUsers(this.value)" placeholder="ابحث عن مستخدم بالاسم..." class="w-full pr-9 pl-3 py-2 bg-slate-100 dark:bg-slate-900 rounded-xl text-xs border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
                     </div>
                 </div>
 
@@ -61,7 +71,7 @@
                     <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
                 </div>
 
-                <div id="usersList" class="space-y-2 overflow-y-auto max-h-[68vh] custom-scrollbar"></div>
+                <div id="usersList" class="space-y-2 overflow-y-auto max-h-[60vh] custom-scrollbar"></div>
             </div>
         </div>
 
@@ -103,7 +113,7 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- مكتبة الـ GIF الضخمة والمحلية (تعمل فوري وبدون فشل) -->
+            <!-- مكتبة الـ GIF المحلية -->
             <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
                 <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في الـ GIFs..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
@@ -185,10 +195,10 @@
         let myName = "", currentTarget = "الجميع", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
+        let allRegisteredUsers = []; // قائمة كل المستخدمين للبحث
         let mediaRecorder, audioChunks = [], isRecording = false;
         let ringtoneInterval = null;
 
-        // مكتبة ضخمة ومنوعة من أفضل صور الـ GIF الثابتة والمضمونة 100%
         const masterGifList = [
             { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh" },
             { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance" },
@@ -199,20 +209,14 @@
             { url: "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif", tags: "قطط حيوانات cat cute" },
             { url: "https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif", tags: "حزن زعل sad cry" },
             { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "حب قلوب love heart" },
-            { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast" },
-            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "قهوة صباح coffee morning" },
-            { url: "https://media.giphy.com/media/g9582DNuQppxC/giphy.gif", tags: "موافق نعم yes ok" },
-            { url: "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif", tags: "رقص طرب party dance" },
-            { url: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif", tags: "بصمة ذكاء smart genius" },
-            { url: "https://media.giphy.com/media/3ohzdIuqJoo8YdKlnW/giphy.gif", tags: "سلام باي goodbye bye" },
-            { url: "https://media.giphy.com/media/l0ExncehJzexFpRHq/giphy.gif", tags: "أكل طعام food yum" }
+            { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast" }
         ];
 
         function renderGifGrid(list) {
             const resultsBox = document.getElementById('gifResults');
             resultsBox.innerHTML = '';
             if (list.length === 0) {
-                resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center pt-10">لا توجد نتائج مطابقة</p>';
+                resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center pt-10">لا توجد نتائج</p>';
                 return;
             }
             list.forEach(g => {
@@ -224,12 +228,8 @@
 
         function filterGifs(query) {
             const q = query.toLowerCase().trim();
-            if (!q) {
-                renderGifGrid(masterGifList);
-                return;
-            }
-            const filtered = masterGifList.filter(g => g.tags.includes(q));
-            renderGifGrid(filtered);
+            if (!q) { renderGifGrid(masterGifList); return; }
+            renderGifGrid(masterGifList.filter(g => g.tags.includes(q)));
         }
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -256,10 +256,7 @@
         }
 
         function stopNativeRingtone() {
-            if (ringtoneInterval) {
-                clearInterval(ringtoneInterval);
-                ringtoneInterval = null;
-            }
+            if (ringtoneInterval) { clearInterval(ringtoneInterval); ringtoneInterval = null; }
             if (navigator.vibrate) navigator.vibrate(0);
         }
 
@@ -296,16 +293,34 @@
             }
         }
 
+        // عرض خطأ التسجيل بوضوح (مثل اسم المستخدم مستخدم مسبقاً)
+        function showAuthError(msg) {
+            const err = document.getElementById('authError');
+            err.innerText = msg;
+            err.classList.remove('hidden');
+        }
+
         function handleRegister() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
-            socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => alert(res.msg));
+            if (!u || !p) { showAuthError("يرجى إدخال اسم المستخدم وكلمة المرور"); return; }
+            socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
+                if (!res.success) {
+                    showAuthError(res.msg); // يعرض الخطأ بوضوح إذا كان الاسم مأخوذاً
+                } else {
+                    showAuthError("");
+                    document.getElementById('authError').classList.add('hidden');
+                    alert(res.msg);
+                }
+            });
         }
 
         function handleLogin() {
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
+            if (!u || !p) { showAuthError("يرجى إدخال البيانات كاملة"); return; }
             socket.emit('login', { username: u, password: p }, res => {
-                if (!res.success) alert(res.msg);
-                else {
+                if (!res.success) {
+                    showAuthError(res.msg);
+                } else {
                     myName = res.username;
                     localStorage.setItem('nexus_user', myName);
                     document.getElementById('myUsername').innerText = myName;
@@ -387,22 +402,46 @@
             }
         }
 
+        // استقبال قائمة المستخدمين وتخزينها للبحث
         socket.on('update_users_list', list => {
+            allRegisteredUsers = list.filter(u => u.username !== myName);
+            displayUsers(allRegisteredUsers);
+        });
+
+        // وظيفة البحث عن الناس بالاسم
+        function searchUsers(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) {
+                displayUsers(allRegisteredUsers);
+                return;
+            }
+            const filtered = allRegisteredUsers.filter(u => u.username.toLowerCase().includes(q));
+            displayUsers(filtered);
+        }
+
+        function displayUsers(list) {
             const container = document.getElementById('usersList');
             container.innerHTML = '';
-            list.filter(u => u.username !== myName).forEach(u => {
+            if (list.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-4">لا يوجد مستخدمون بهذا الاسم</p>';
+                return;
+            }
+            list.forEach(u => {
                 const dotColor = u.isOnline ? 'bg-emerald-500' : 'bg-slate-400';
                 container.innerHTML += `
                     <div onclick="selectUser('${u.username}', '${u.avatar}')" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${u.avatar}</span>
-                            <span class="font-bold text-sm text-slate-800 dark:text-slate-200">${u.username}</span>
+                            <div>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">${u.username}</span>
+                                <span class="text-[10px] text-slate-400">${u.isOnline ? 'متصل الآن' : 'غير متصل'}</span>
+                            </div>
                         </div>
                         <span class="w-2.5 h-2.5 ${dotColor} rounded-full"></span>
                     </div>
                 `;
             });
-        });
+        }
 
         function selectGlobalChat() {
             currentTarget = "الجميع";
@@ -558,7 +597,6 @@
                 document.getElementById('callOverlay').classList.remove('hidden');
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
-                    document.getElementById('localWordVideo').srcObject = localStream; // fixed local video
                     document.getElementById('localVideo').srcObject = localStream;
 
                     peerConnection = new RTCPeerConnection(rtcConfig);
