@@ -1,6 +1,6 @@
 {
   "name": "nexus-messenger",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Nexus Messenger",
   "main": "server.js",
   "scripts": {
