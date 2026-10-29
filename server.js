@@ -19,7 +19,6 @@ const socketToUser = new Map();
 
 io.on('connection', (socket) => {
 
-    // تسجيل حساب مع التحقق الصارم من عدم تكرار الاسم
     socket.on('register', async ({ username, password, avatar }, callback) => {
         const cleanName = username.trim();
         if (!cleanName || !password) return callback({ success: false, msg: 'يرجى إدخال البيانات كاملة' });
@@ -30,7 +29,7 @@ io.on('connection', (socket) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         usersDB.set(cleanName, { passwordHash: hashedPassword, avatar: avatar || '⚡' });
-        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الان' });
+        callback({ success: true, msg: 'تم إنشاء الحساب بنجاح!' });
     });
 
     socket.on('login', async ({ username, password }, callback) => {
@@ -45,7 +44,7 @@ io.on('connection', (socket) => {
         socketToUser.set(socket.id, cleanName);
 
         callback({ success: true, username: cleanName, avatar: user.avatar });
-        broadcastOnlineList();
+        broadcastOnlineStatus();
     });
 
     socket.on('auto_login', ({ username }, callback) => {
@@ -55,36 +54,49 @@ io.on('connection', (socket) => {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
             callback({ success: true, username: cleanName, avatar: user.avatar });
-            broadcastOnlineList();
+            broadcastOnlineStatus();
         } else {
             callback({ success: false });
         }
     });
 
-    function broadcastOnlineList() {
-        const list = Array.from(usersDB.keys()).map(name => ({
-            username: name,
-            avatar: usersDB.get(name)?.avatar || '⚡',
-            isOnline: onlineUsers.has(name)
-        }));
-        io.emit('update_users_list', list);
+    // البحث عن مستخدم باليوزر
+    socket.on('search_user', ({ targetUsername }, callback) => {
+        const cleanTarget = targetUsername.trim();
+        if (usersDB.has(cleanTarget)) {
+            const user = usersDB.get(cleanTarget);
+            callback({ 
+                found: true, 
+                username: cleanTarget, 
+                avatar: user.avatar,
+                isOnline: onlineUsers.has(cleanTarget)
+            });
+        } else {
+            callback({ found: false, msg: 'المستخدم غير موجود' });
+        }
+    });
+
+    function broadcastOnlineStatus() {
+        const onlineList = Array.from(onlineUsers.keys());
+        io.emit('online_users_status', onlineList);
     }
 
-    socket.on('send_message', ({ to, message, file, fileType }) => {
+    socket.on('send_message', ({ to, message, file, fileType, isGroup }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
 
         const payload = {
             from: sender,
-            to: to || 'الجميع',
+            to: to,
             message: message || '',
             file: file || null,
             fileType: fileType || null,
+            isGroup: !!isGroup,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
-        if (to === 'الجميع' || !to) {
-            io.emit('receive_message', payload);
+        if (isGroup) {
+            io.emit('receive_group_message', payload);
         } else {
             const recipientSocketId = onlineUsers.get(to);
             if (recipientSocketId) {
@@ -129,10 +141,10 @@ io.on('connection', (socket) => {
         if (user) {
             onlineUsers.delete(user);
             socketToUser.delete(socket.id);
-            broadcastOnlineList();
+            broadcastOnlineStatus();
         }
     });
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger Pro يعمل على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v5.0 يعمل بنجاح على المنفذ: ${PORT}`));
