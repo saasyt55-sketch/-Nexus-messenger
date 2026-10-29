@@ -13,8 +13,6 @@
         body { font-family: 'Cairo', sans-serif; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        
-        /* فلاتر سناب خفيفة للمكالمات */
         .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
         .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
         .filter-cyber { filter: hue-rotate(180deg) saturate(140%); }
@@ -27,7 +25,7 @@
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وابدأ بإضافة أصدقائك باليوزر</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وأرسل طلبات صداقة لأصدقائك</p>
             
             <div class="space-y-3">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم (اليوزر)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
@@ -52,7 +50,6 @@
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                         <h2 class="font-black text-cyan-600 dark:text-cyan-400">الدردشات</h2>
-                        <!-- زر الزائد (+) -->
                         <button onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
@@ -65,9 +62,8 @@
                     </div>
                 </div>
 
-                <!-- قائمة الأصدقاء والمجموعات المضافة فقط -->
                 <div id="myContactsList" class="space-y-2 overflow-y-auto max-h-[72vh] custom-scrollbar">
-                    <p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) للبحث وإضافة أصدقاء!</p>
+                    <p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) لإرسال طلبات صداقة!</p>
                 </div>
             </div>
         </div>
@@ -90,17 +86,17 @@
                     <button onclick="startCall(false)" title="مكالمة صوتية" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-phone"></i>
                     </button>
-                    <button onclick="startCall(true)" title="مكالمة فيديو مع فلاتر سناب" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
+                    <button onclick="startCall(true)" title="مكالمة فيديو" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-video"></i>
                     </button>
                 </div>
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-400 my-auto pt-20">اختر صديقاً من جهات الاتصال أو أنشئ مجتمعاً جديداً ⚡</div>
+                <div class="text-center text-xs text-slate-400 my-auto pt-20">اختر صديقاً من جهات الاتصال أو أضف أصدقاء جدداً ⚡</div>
             </div>
 
-            <!-- قائمة الإيموجيات -->
+            <!-- إيموجيات -->
             <div id="emojiPicker" class="hidden absolute bottom-20 left-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-6 gap-2 z-30">
                 <span onclick="insertEmoji('😀')" class="cursor-pointer text-xl hover:scale-125 transition">😀</span>
                 <span onclick="insertEmoji('😂')" class="cursor-pointer text-xl hover:scale-125 transition">😂</span>
@@ -110,7 +106,7 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- مكتبة GIF -->
+            <!-- GIFs -->
             <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
                 <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في الـ GIFs..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
@@ -141,23 +137,20 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات وفلاتر سناب الخفيفة -->
+            <!-- شاشة المكالمات وفلاتر سناب -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6">
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover transition-all duration-300"></video>
                     <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300"></video>
                 </div>
                 
-                <!-- شريط فلاتر سناب الخفيفة للوجه -->
                 <div class="w-full max-w-xs flex justify-center gap-2 my-2 overflow-x-auto py-1">
-                    <button onclick="applySnapFilter('')" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full text-xs border border-white/20">عادي</button>
-                    <button onclick="applySnapFilter('filter-smooth')" class="px-3 py-1 bg-amber-500/80 text-white rounded-full text-xs font-bold shadow">✨ تجميل</button>
-                    <button onclick="applySnapFilter('filter-warm')" class="px-3 py-1 bg-orange-600/80 text-white rounded-full text-xs font-bold shadow">🌅 دافئ</button>
-                    <button onclick="applySnapFilter('filter-cyber')" class="px-3 py-1 bg-cyan-600/80 text-white rounded-full text-xs font-bold shadow">🤖 سايبر</button>
-                    <button onclick="applySnapFilter('filter-bw')" class="px-3 py-1 bg-slate-700 text-white rounded-full text-xs font-bold shadow">🎬 أسود/أبيض</button>
+                    <button onclick="applySnapFilter('')" class="px-3 py-1 bg-neutral-800 text-white rounded-full text-xs border border-white/20">عادي</button>
+                    <button onclick="applySnapFilter('filter-smooth')" class="px-3 py-1 bg-amber-500/80 text-white rounded-full text-xs font-bold">✨ تجميل</button>
+                    <button onclick="applySnapFilter('filter-warm')" class="px-3 py-1 bg-orange-600/80 text-white rounded-full text-xs font-bold">🌅 دافئ</button>
+                    <button onclick="applySnapFilter('filter-cyber')" class="px-3 py-1 bg-cyan-600/80 text-white rounded-full text-xs font-bold">🤖 سايبر</button>
                 </div>
 
-                <!-- تحكم المكالمة -->
                 <div class="mb-4 flex items-center gap-6 bg-neutral-900/80 backdrop-blur-md px-8 py-3 rounded-full border border-white/10 shadow-2xl">
                     <button id="toggleMicBtn" onclick="toggleMicrophone()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
                         <i id="micIcon" class="fa-solid fa-microphone text-emerald-400 text-base"></i>
@@ -173,42 +166,51 @@
         </div>
     </div>
 
-    <!-- نافذة زر (+) (إضافة صديق باليوزر أو إنشاء مجتمع) -->
+    <!-- نافذة زر (+) المتطورة مع زر طلبات الصداقة -->
     <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
-            <h2 class="text-xl font-black text-slate-900 dark:text-white">إضافة جديدة ✨</h2>
+            <h2 class="text-xl font-black text-slate-900 dark:text-white">إضافة وخيارات ✨</h2>
             
             <div class="space-y-3">
                 <button onclick="openAddFriendSection()" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-user-plus"></i> إضافة صديق باليوزر
+                    <i class="fa-solid fa-user-plus"></i> إرسال طلب صداقة باليوزر
+                </button>
+                <button onclick="openFriendRequestsSection()" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2 relative">
+                    <i class="fa-solid fa-bell"></i> طلبات الصداقة الواردة
+                    <span id="reqBadge" class="hidden absolute top-2 right-2 w-3 h-3 bg-rose-600 rounded-full animate-ping"></span>
                 </button>
                 <button onclick="openCreateGroupSection()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users-rectangle"></i> إنشاء مجتمع / جروب
                 </button>
             </div>
 
-            <!-- قسم البحث عن صديق باليوزر -->
+            <!-- قسم إرسال طلب صداقة -->
             <div id="addFriendSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="searchUserInput" placeholder="اكتب يوزر الشخص بالظبط..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
-                <button onclick="searchAndAddUser()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">بحث وإضافة</button>
+                <button onclick="sendFriendReq()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">إرسال طلب الصداقة</button>
                 <p id="searchUserResult" class="text-xs font-bold hidden"></p>
             </div>
 
-            <!-- قسم إنشاء مجتمع/جروب -->
+            <!-- قسم عرض طلبات الصداقة الواردة -->
+            <div id="friendRequestsSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3 max-h-48 overflow-y-auto custom-scrollbar">
+                <p class="text-xs text-slate-400">الطلبات الواردة:</p>
+                <div id="friendRequestsList" class="space-y-2"></div>
+            </div>
+
+            <!-- قسم إنشاء جروب -->
             <div id="createGroupSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="groupNameInput" placeholder="اسم المجتمع / الجروب..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
                 <button onclick="createNewGroup()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">إنشاء المجتمع</button>
             </div>
 
-            <button onclick="closePlusMenu()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs">إلغاء</button>
+            <button onclick="closePlusMenu()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs">إغلاق</button>
         </div>
     </div>
 
-    <!-- نافذة الإعدادات -->
+    <!-- الإعدادات -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات التطبيق ⚙️</h2>
-            
             <div class="space-y-3 text-right">
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق:</span>
@@ -218,7 +220,6 @@
                     </button>
                 </div>
             </div>
-
             <button onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج</button>
             <button onclick="closeSettings()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs">إغلاق</button>
         </div>
@@ -229,21 +230,16 @@
         let myName = "", currentTarget = "", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
         
-        // الذاكرة المحلية للأصدقاء المضافين والرسائل
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
-
         let mediaRecorder, audioChunks = [], isRecording = false;
-        let ringtoneInterval = null;
 
         const masterGifList = [
             { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh" },
             { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance" },
             { url: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", tags: "حيرة تفكير think confused" },
-            { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome" },
-            { url: "https://media.giphy.com/media/xTpxIuIH7QSWEtK83u/giphy.gif", tags: "تصفيق تسويق clap bravo" },
-            { url: "https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif", tags: "حماس اكشن wow cool" }
+            { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome" }
         ];
 
         function renderGifGrid(list) {
@@ -263,34 +259,7 @@
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
         function applySnapFilter(filterClass) {
-            const localVid = document.getElementById('localVideo');
-            localVid.className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
-        }
-
-        function playNativeRingtone() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                ringtoneInterval = setInterval(() => {
-                    if (audioCtx.state === 'suspended') audioCtx.resume();
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                    if (navigator.vibrate) navigator.vibrate([300, 200, 300]);
-                }, 1200);
-            } catch (e) {}
-        }
-
-        function stopNativeRingtone() {
-            if (ringtoneInterval) { clearInterval(ringtoneInterval); ringtoneInterval = null; }
-            if (navigator.vibrate) navigator.vibrate(0);
+            document.getElementById('localVideo').className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
         }
 
         socket.on('connect', () => {
@@ -302,6 +271,7 @@
                         document.getElementById('myUsername').innerText = myName;
                         document.getElementById('authModal').classList.add('hidden');
                         renderContactsList();
+                        fetchFriendRequests();
                     } else {
                         localStorage.removeItem('nexus_user');
                     }
@@ -309,51 +279,96 @@
             }
         });
 
-        function openPlusMenu() { document.getElementById('plusModal').classList.remove('hidden'); }
+        function openPlusMenu() { 
+            document.getElementById('plusModal').classList.remove('hidden');
+            fetchFriendRequests();
+        }
         function closePlusMenu() { 
             document.getElementById('plusModal').classList.add('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
+            document.getElementById('friendRequestsSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
         }
 
         function openAddFriendSection() {
             document.getElementById('addFriendSection').classList.remove('hidden');
+            document.getElementById('friendRequestsSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
+        }
+
+        function openFriendRequestsSection() {
+            document.getElementById('friendRequestsSection').classList.remove('hidden');
+            document.getElementById('addFriendSection').classList.add('hidden');
+            document.getElementById('createGroupSection').classList.add('hidden');
+            fetchFriendRequests();
         }
 
         function openCreateGroupSection() {
             document.getElementById('createGroupSection').classList.remove('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
+            document.getElementById('friendRequestsSection').classList.add('hidden');
         }
 
-        function searchAndAddUser() {
+        function sendFriendReq() {
             const target = document.getElementById('searchUserInput').value.trim();
             const resText = document.getElementById('searchUserResult');
-            
             if (!target) return;
-            if (target === myName) {
-                resText.innerText = "لا يمكنك إضافة نفسك!";
-                resText.className = "text-xs font-bold text-rose-500 block";
-                return;
-            }
 
-            socket.emit('search_user', { targetUsername: target }, res => {
-                if (res.found) {
-                    if (!mySavedContacts.some(c => c.username === target)) {
-                        mySavedContacts.push({ username: target, avatar: res.avatar, isGroup: false });
+            socket.emit('send_friend_request', { targetUsername: target }, res => {
+                resText.innerText = res.msg;
+                resText.className = res.success ? "text-xs font-bold text-emerald-500 block" : "text-xs font-bold text-rose-500 block";
+            });
+        }
+
+        function fetchFriendRequests() {
+            socket.emit('get_friend_requests', requests => {
+                const listContainer = document.getElementById('friendRequestsList');
+                const badge = document.getElementById('reqBadge');
+                listContainer.innerHTML = '';
+
+                if (requests.length > 0) {
+                    badge.classList.remove('hidden');
+                    requests.forEach(req => {
+                        listContainer.innerHTML += `
+                            <div class="flex items-center justify-between bg-slate-800 p-2.5 rounded-xl">
+                                <span class="text-xs font-bold text-white">${req.avatar} ${req.username}</span>
+                                <div class="flex gap-1">
+                                    <button onclick="respondReq('${req.username}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[10px]">قبول</button>
+                                    <button onclick="respondReq('${req.username}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold rounded-lg text-[10px]">رفض</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    badge.classList.add('hidden');
+                    listContainer.innerHTML = '<p class="text-[10px] text-slate-400 text-center">لا توجد طلبات صداقة حالياً</p>';
+                }
+            });
+        }
+
+        socket.on('new_friend_request', () => {
+            document.getElementById('reqBadge').classList.remove('hidden');
+        });
+
+        socket.on('friend_request_accepted', data => {
+            if (!mySavedContacts.some(c => c.username === data.by)) {
+                mySavedContacts.push({ username: data.by, avatar: '⚡', isGroup: false });
+                localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
+                renderContactsList();
+                alert(`قبل ${data.by} طلب الصداقة وأصبح ضمن أصدقائك الآن! 🎉`);
+            }
+        });
+
+        function respondReq(fromUser, accept) {
+            socket.emit('respond_friend_request', { fromUser, accept }, res => {
+                if (accept && res.success) {
+                    if (!mySavedContacts.some(c => c.username === res.friend.username)) {
+                        mySavedContacts.push(res.friend);
                         localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
                         renderContactsList();
-                        resText.innerText = "تمت إضافة الصديق بنجاح! 🎉";
-                        resText.className = "text-xs font-bold text-emerald-500 block";
-                        setTimeout(closePlusMenu, 1000);
-                    } else {
-                        resText.innerText = "هذا المستخدم مضاف لديك بالفعل!";
-                        resText.className = "text-xs font-bold text-amber-500 block";
                     }
-                } else {
-                    resText.innerText = res.msg;
-                    resText.className = "text-xs font-bold text-rose-500 block";
                 }
+                fetchFriendRequests();
             });
         }
 
@@ -375,23 +390,20 @@
         function renderContactsList() {
             const container = document.getElementById('myContactsList');
             container.innerHTML = '';
-
             if (mySavedContacts.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) للبحث وإضافة أصدقاء!</p>';
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) لإرسال طلبات صداقة!</p>';
                 return;
             }
-
             mySavedContacts.forEach(c => {
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
-                
                 container.innerHTML += `
                     <div onclick="selectContact('${c.username}', '${c.avatar}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${c.avatar}</span>
                             <div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">${c.username} ${c.isGroup ? '(مجتمع)' : ''}</span>
-                                <span class="text-[10px] text-slate-400">${c.isGroup ? 'مجتمع اعضاء' : (isOnline ? 'متصل الان' : 'غير متصل')}</span>
+                                <span class="text-[10px] text-slate-400">${c.isGroup ? 'مجتمع' : (isOnline ? 'متصل الان' : 'غير متصل')}</span>
                             </div>
                         </div>
                         <span class="w-2.5 h-2.5 ${dotColor} rounded-full"></span>
@@ -404,13 +416,8 @@
             currentTarget = username;
             document.getElementById('targetUsername').innerText = username;
             document.getElementById('targetAvatar').innerText = avatar;
-            
-            if (isGroup) {
-                document.getElementById('callButtons').classList.add('hidden');
-            } else {
-                document.getElementById('callButtons').classList.remove('hidden');
-            }
-
+            if (isGroup) document.getElementById('callButtons').classList.add('hidden');
+            else document.getElementById('callButtons').classList.remove('hidden');
             if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
             renderMessages();
         }
@@ -445,10 +452,7 @@
             if (!u || !p) { showAuthError("يرجى إدخال اسم المستخدم وكلمة المرور"); return; }
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
                 if (!res.success) showAuthError(res.msg);
-                else {
-                    showAuthError("");
-                    alert(res.msg);
-                }
+                else { showAuthError(""); alert(res.msg); }
             });
         }
 
@@ -463,6 +467,7 @@
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('authModal').classList.add('hidden');
                     renderContactsList();
+                    fetchFriendRequests();
                 }
             });
         }
@@ -494,54 +499,8 @@
         function sendGif(url) {
             if (!currentTarget) return;
             const currentObj = mySavedContacts.find(c => c.username === currentTarget);
-            socket.emit('send_message', { 
-                to: currentTarget, 
-                message: '', 
-                file: url,
-                fileType: 'gif',
-                isGroup: currentObj?.isGroup
-            });
+            socket.emit('send_message', { to: currentTarget, message: '', file: url, fileType: 'gif', isGroup: currentObj?.isGroup });
             document.getElementById('gifPicker').classList.add('hidden');
-        }
-
-        async function toggleVoiceRecording() {
-            const btn = document.getElementById('voiceRecordBtn');
-            if (!currentTarget) return alert("اختر صديقاً أولاً!");
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const reader = new FileReader();
-                        reader.readAsDataURL(audioBlob);
-                        reader.onloadend = () => {
-                            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
-                            socket.emit('send_message', { 
-                                to: currentTarget, 
-                                message: '', 
-                                file: reader.result,
-                                fileType: 'audio',
-                                isGroup: currentObj?.isGroup
-                            });
-                        };
-                        stream.getTracks().forEach(t => t.stop());
-                    };
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
-                } catch (err) {
-                    alert("تعذر الوصول للمايكروفون!");
-                }
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-                btn.classList.remove('bg-rose-600', 'text-white', 'animate-pulse');
-            }
         }
 
         function sendMessage(e) {
@@ -549,11 +508,7 @@
             const input = document.getElementById('msgInput');
             if (input.value.trim() && currentTarget) {
                 const currentObj = mySavedContacts.find(c => c.username === currentTarget);
-                socket.emit('send_message', { 
-                    to: currentTarget, 
-                    message: input.value.trim(),
-                    isGroup: currentObj?.isGroup 
-                });
+                socket.emit('send_message', { to: currentTarget, message: input.value.trim(), isGroup: currentObj?.isGroup });
                 input.value = '';
             }
         }
@@ -561,18 +516,11 @@
         function previewAndSendFile(event) {
             const file = event.target.files[0];
             if (!file || !currentTarget) return;
-
             const isVideo = file.type.startsWith('video/');
             const reader = new FileReader();
             reader.onload = function(e) {
                 const currentObj = mySavedContacts.find(c => c.username === currentTarget);
-                socket.emit('send_message', { 
-                    to: currentTarget, 
-                    message: '', 
-                    file: e.target.result,
-                    fileType: isVideo ? 'video' : 'image',
-                    isGroup: currentObj?.isGroup
-                });
+                socket.emit('send_message', { to: currentTarget, message: '', file: e.target.result, fileType: isVideo ? 'video' : 'image', isGroup: currentObj?.isGroup });
             };
             reader.readAsDataURL(file);
             event.target.value = '';
@@ -583,7 +531,6 @@
             if (!chatStore[partner]) chatStore[partner] = [];
             chatStore[partner].push(data);
             localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
-
             if (partner === currentTarget) renderMessages();
         });
 
@@ -592,7 +539,6 @@
             if (!chatStore[groupName]) chatStore[groupName] = [];
             chatStore[groupName].push(data);
             localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
-
             if (groupName === currentTarget) renderMessages();
         });
 
@@ -602,21 +548,7 @@
             const list = chatStore[currentTarget] || [];
             list.forEach(m => {
                 const isMe = m.from === myName;
-                let content = '';
-
-                if (m.file) {
-                    if (m.fileType === 'video') {
-                        content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
-                    } else if (m.fileType === 'audio') {
-                        content = `<audio src="${m.file}" controls class="w-full max-w-xs"></audio>`;
-                    } else if (m.fileType === 'gif') {
-                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow"/>`;
-                    } else {
-                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover cursor-pointer shadow" onclick="window.open('${m.file}')"/>`;
-                    }
-                } else {
-                    content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
-                }
+                let content = m.file ? (m.fileType === 'video' ? `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>` : `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow" onclick="window.open('${m.file}')"/>`) : `<p class="text-sm leading-relaxed">${m.message}</p>`;
 
                 box.innerHTML += `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
@@ -631,108 +563,29 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        function toggleMicrophone() {
-            if (localStream) {
-                const audioTrack = localStream.getAudioTracks()[0];
-                if (audioTrack) {
-                    isMicMuted = !isMicMuted;
-                    audioTrack.enabled = !isMicMuted;
-                    document.getElementById('micIcon').className = isMicMuted ? "fa-solid fa-microphone-slash text-rose-500 text-base" : "fa-solid fa-microphone text-emerald-400 text-base";
-                }
-            }
-        }
-
-        function toggleCamera() {
-            if (localStream) {
-                const videoTrack = localStream.getVideoTracks()[0];
-                if (videoTrack) {
-                    isCamOff = !isCamOff;
-                    videoTrack.enabled = !isCamOff;
-                    document.getElementById('camIcon').className = isCamOff ? "fa-solid fa-video-slash text-rose-500 text-base" : "fa-solid fa-video text-emerald-400 text-base";
-                }
-            }
-        }
-
         async function startCall(isVideo) {
             document.getElementById('callOverlay').classList.remove('hidden');
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
                 document.getElementById('localVideo').srcObject = localStream;
-
                 peerConnection = new RTCPeerConnection(rtcConfig);
                 localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-                peerConnection.ontrack = e => {
-                    document.getElementById('remoteVideo').srcObject = e.streams[0];
-                };
-
-                peerConnection.onicecandidate = e => {
-                    if (e.candidate) socket.emit('ice_candidate', { to: currentTarget, candidate: e.candidate });
-                };
-
+                peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+                peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { to: currentTarget, candidate: e.candidate }); };
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 socket.emit('call_user', { to: currentTarget, offer, isVideo });
-            } catch (err) {
-                alert("يرجى تفعيل صلاحيات الكاميرا والمايك!");
-                endCall(false);
-            }
+            } catch (err) { alert("تعذر فتح المايك أو الكاميرا!"); endCall(false); }
         }
 
         socket.on('incoming_call', async ({ from, offer, isVideo }) => {
-            playNativeRingtone();
-
             if (confirm(`مكالمة واردة من ${from}.. هل تريد الرد؟`)) {
-                stopNativeRingtone();
                 currentTarget = from;
                 document.getElementById('callOverlay').classList.remove('hidden');
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
                     document.getElementById('localVideo').srcObject = localStream;
-
                     peerConnection = new RTCPeerConnection(rtcConfig);
                     localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-                    peerConnection.ontrack = e => {
-                        document.getElementById('remoteVideo').srcObject = e.streams[0];
-                    };
-
-                    peerConnection.onicecandidate = e => {
-                        if (e.candidate) socket.emit('ice_candidate', { to: from, candidate: e.candidate });
-                    };
-
-                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-                    const answer = await peerConnection.createAnswer();
-                    await peerConnection.setLocalDescription(answer);
-                    socket.emit('answer_call', { to: from, answer });
-                } catch (err) {
-                    alert("تعذر فتح المايك أو الكاميرا!");
-                    endCall(false);
-                }
-            } else {
-                stopNativeRingtone();
-                socket.emit('end_call', { to: from });
-            }
-        });
-
-        socket.on('call_answered', async ({ answer }) => {
-            stopNativeRingtone();
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        });
-
-        socket.on('ice_candidate', async ({ candidate }) => {
-            if (peerConnection) await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        });
-
-        socket.on('call_ended', () => endCall(false));
-
-        function endCall(notify = true) {
-            stopNativeRingtone();
-            if (notify && currentTarget) socket.emit('end_call', { to: currentTarget });
-            if (peerConnection) peerConnection.close();
-            if (localStream) localStream.getTracks().forEach(t => t.stop());
-            document.getElementById('callOverlay').classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
+                    peerConnection.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+                    peerConnection.onicecandidate = e => { if (e.candidate) socket.emit('ice_candidate', { to: from, candidate: e
