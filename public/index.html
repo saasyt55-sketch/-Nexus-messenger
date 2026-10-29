@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger - Pro Search Edition</title>
+    <title>-Nexus-messenger VIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,18 +13,24 @@
         body { font-family: 'Cairo', sans-serif; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        
+        /* فلاتر سناب خفيفة للمكالمات */
+        .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
+        .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
+        .filter-cyber { filter: hue-rotate(180deg) saturate(140%); }
+        .filter-bw { filter: grayscale(100%) contrast(120%); }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- نافذة تسجيل الدخول والتسجيل -->
+    <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك أو أنشئ حساباً جديداً باسم فريد</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وابدأ بإضافة أصدقائك باليوزر</p>
             
             <div class="space-y-3">
-                <input type="text" id="authUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
+                <input type="text" id="authUsername" placeholder="اسم المستخدم (اليوزر)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="password" id="authPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
             </div>
 
@@ -43,8 +49,14 @@
         <!-- القائمة الجانبية -->
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300">
             <div>
-                <div class="flex items-center justify-between mb-3 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-                    <h2 class="font-black text-cyan-600 dark:text-cyan-400 flex items-center gap-2"><i class="fa-solid fa-comments"></i> الدردشات</h2>
+                <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-black text-cyan-600 dark:text-cyan-400">الدردشات</h2>
+                        <!-- زر الزائد (+) -->
+                        <button onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
                     <div class="flex items-center gap-2">
                         <button onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition">
                             <i class="fa-solid fa-gear text-xs"></i>
@@ -53,25 +65,10 @@
                     </div>
                 </div>
 
-                <!-- شريط البحث عن المستخدمين بالاسم -->
-                <div class="mb-3">
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-search text-xs"></i>
-                        </span>
-                        <input type="text" id="userSearchInput" onkeyup="searchUsers(this.value)" placeholder="ابحث عن مستخدم بالاسم..." class="w-full pr-9 pl-3 py-2 bg-slate-100 dark:bg-slate-900 rounded-xl text-xs border border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
-                    </div>
+                <!-- قائمة الأصدقاء والمجموعات المضافة فقط -->
+                <div id="myContactsList" class="space-y-2 overflow-y-auto max-h-[72vh] custom-scrollbar">
+                    <p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) للبحث وإضافة أصدقاء!</p>
                 </div>
-
-                <div onclick="selectGlobalChat()" class="p-3 mb-3 rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-500/30 cursor-pointer flex items-center justify-between transition">
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">🌍</span>
-                        <span class="font-bold text-sm text-cyan-700 dark:text-cyan-300">الدردشة العامة (للجميع)</span>
-                    </div>
-                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                </div>
-
-                <div id="usersList" class="space-y-2 overflow-y-auto max-h-[60vh] custom-scrollbar"></div>
             </div>
         </div>
 
@@ -82,10 +79,10 @@
                     <button onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">🌍</div>
+                    <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">💬</div>
                     <div>
-                        <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">الدردشة العامة (للجميع)</h3>
-                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة مفتوحة للكل</p>
+                        <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
+                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومباشرة</p>
                     </div>
                 </div>
 
@@ -93,14 +90,14 @@
                     <button onclick="startCall(false)" title="مكالمة صوتية" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-phone"></i>
                     </button>
-                    <button onclick="startCall(true)" title="مكالمة فيديو" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
+                    <button onclick="startCall(true)" title="مكالمة فيديو مع فلاتر سناب" class="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition flex items-center justify-center text-cyan-600 dark:text-cyan-400 shadow">
                         <i class="fa-solid fa-video"></i>
                     </button>
                 </div>
             </div>
 
             <div id="messagesBox" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar">
-                <div class="text-center text-xs text-slate-400 my-auto pt-20">أهلاً بك في -Nexus-messenger، تحدث مع الجميع الآن! ⚡</div>
+                <div class="text-center text-xs text-slate-400 my-auto pt-20">اختر صديقاً من جهات الاتصال أو أنشئ مجتمعاً جديداً ⚡</div>
             </div>
 
             <!-- قائمة الإيموجيات -->
@@ -113,13 +110,13 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- مكتبة الـ GIF المحلية -->
+            <!-- مكتبة GIF -->
             <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
                 <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في الـ GIFs..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
-            <!-- شريط الكتابة -->
+            <!-- شريط المراسلة -->
             <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
                     <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition" title="إيموجي">
@@ -144,29 +141,66 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات -->
-            <div id="callOverlay" class="hidden absolute inset-0 bg-black/90 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-6">
-                <div id="incomingCallAlert" class="hidden absolute top-10 bg-cyan-500 text-slate-950 font-black px-6 py-3 rounded-2xl shadow-2xl animate-bounce text-sm">
-                    📞 مكالمة واردة جديدة... جاري الرنين
-                </div>
-
+            <!-- شاشة المكالمات وفلاتر سناب الخفيفة -->
+            <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6">
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
-                    <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-32 h-44 object-cover rounded-2xl border-2 border-white/20 shadow-2xl"></video>
+                    <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover transition-all duration-300"></video>
+                    <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300"></video>
                 </div>
                 
-                <div class="my-6 flex items-center gap-6 bg-neutral-900/80 backdrop-blur-md px-8 py-4 rounded-full border border-white/10 shadow-2xl">
-                    <button id="toggleMicBtn" onclick="toggleMicrophone()" class="w-14 h-14 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow-md">
-                        <i id="micIcon" class="fa-solid fa-microphone text-emerald-400 text-lg"></i>
+                <!-- شريط فلاتر سناب الخفيفة للوجه -->
+                <div class="w-full max-w-xs flex justify-center gap-2 my-2 overflow-x-auto py-1">
+                    <button onclick="applySnapFilter('')" class="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full text-xs border border-white/20">عادي</button>
+                    <button onclick="applySnapFilter('filter-smooth')" class="px-3 py-1 bg-amber-500/80 text-white rounded-full text-xs font-bold shadow">✨ تجميل</button>
+                    <button onclick="applySnapFilter('filter-warm')" class="px-3 py-1 bg-orange-600/80 text-white rounded-full text-xs font-bold shadow">🌅 دافئ</button>
+                    <button onclick="applySnapFilter('filter-cyber')" class="px-3 py-1 bg-cyan-600/80 text-white rounded-full text-xs font-bold shadow">🤖 سايبر</button>
+                    <button onclick="applySnapFilter('filter-bw')" class="px-3 py-1 bg-slate-700 text-white rounded-full text-xs font-bold shadow">🎬 أسود/أبيض</button>
+                </div>
+
+                <!-- تحكم المكالمة -->
+                <div class="mb-4 flex items-center gap-6 bg-neutral-900/80 backdrop-blur-md px-8 py-3 rounded-full border border-white/10 shadow-2xl">
+                    <button id="toggleMicBtn" onclick="toggleMicrophone()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
+                        <i id="micIcon" class="fa-solid fa-microphone text-emerald-400 text-base"></i>
                     </button>
-                    <button onclick="endCall()" class="w-16 h-16 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white text-2xl shadow-xl shadow-rose-600/40">
+                    <button onclick="endCall()" class="w-14 h-14 bg-rose-600 hover:bg-rose-500 rounded-full flex items-center justify-center text-white text-xl shadow-xl shadow-rose-600/40">
                         <i class="fa-solid fa-phone-slash"></i>
                     </button>
-                    <button id="toggleCamBtn" onclick="toggleCamera()" class="w-14 h-14 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow-md">
-                        <i id="camIcon" class="fa-solid fa-video text-emerald-400 text-lg"></i>
+                    <button id="toggleCamBtn" onclick="toggleCamera()" class="w-12 h-12 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white flex items-center justify-center transition shadow">
+                        <i id="camIcon" class="fa-solid fa-video text-emerald-400 text-base"></i>
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- نافذة زر (+) (إضافة صديق باليوزر أو إنشاء مجتمع) -->
+    <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
+            <h2 class="text-xl font-black text-slate-900 dark:text-white">إضافة جديدة ✨</h2>
+            
+            <div class="space-y-3">
+                <button onclick="openAddFriendSection()" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i> إضافة صديق باليوزر
+                </button>
+                <button onclick="openCreateGroupSection()" class="w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-users-rectangle"></i> إنشاء مجتمع / جروب
+                </button>
+            </div>
+
+            <!-- قسم البحث عن صديق باليوزر -->
+            <div id="addFriendSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <input type="text" id="searchUserInput" placeholder="اكتب يوزر الشخص بالظبط..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
+                <button onclick="searchAndAddUser()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">بحث وإضافة</button>
+                <p id="searchUserResult" class="text-xs font-bold hidden"></p>
+            </div>
+
+            <!-- قسم إنشاء مجتمع/جروب -->
+            <div id="createGroupSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <input type="text" id="groupNameInput" placeholder="اسم المجتمع / الجروب..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
+                <button onclick="createNewGroup()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">إنشاء المجتمع</button>
+            </div>
+
+            <button onclick="closePlusMenu()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs">إلغاء</button>
         </div>
     </div>
 
@@ -192,10 +226,14 @@
 
     <script>
         const socket = io();
-        let myName = "", currentTarget = "الجميع", peerConnection, localStream;
+        let myName = "", currentTarget = "", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
+        
+        // الذاكرة المحلية للأصدقاء المضافين والرسائل
+        let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
-        let allRegisteredUsers = []; // قائمة كل المستخدمين للبحث
+        let onlineUsersStatus = [];
+
         let mediaRecorder, audioChunks = [], isRecording = false;
         let ringtoneInterval = null;
 
@@ -205,24 +243,14 @@
             { url: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", tags: "حيرة تفكير think confused" },
             { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome" },
             { url: "https://media.giphy.com/media/xTpxIuIH7QSWEtK83u/giphy.gif", tags: "تصفيق تسويق clap bravo" },
-            { url: "https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif", tags: "حماس اكشن wow cool" },
-            { url: "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif", tags: "قطط حيوانات cat cute" },
-            { url: "https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif", tags: "حزن زعل sad cry" },
-            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "حب قلوب love heart" },
-            { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast" }
+            { url: "https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif", tags: "حماس اكشن wow cool" }
         ];
 
         function renderGifGrid(list) {
             const resultsBox = document.getElementById('gifResults');
             resultsBox.innerHTML = '';
-            if (list.length === 0) {
-                resultsBox.innerHTML = '<p class="text-[10px] text-slate-400 col-span-2 text-center pt-10">لا توجد نتائج</p>';
-                return;
-            }
             list.forEach(g => {
-                resultsBox.innerHTML += `
-                    <img src="${g.url}" onclick="sendGif('${g.url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">
-                `;
+                resultsBox.innerHTML += `<img src="${g.url}" onclick="sendGif('${g.url}')" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:scale-105 transition shadow">`;
             });
         }
 
@@ -233,6 +261,11 @@
         }
 
         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+        function applySnapFilter(filterClass) {
+            const localVid = document.getElementById('localVideo');
+            localVid.className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
+        }
 
         function playNativeRingtone() {
             try {
@@ -268,6 +301,7 @@
                         myName = res.username;
                         document.getElementById('myUsername').innerText = myName;
                         document.getElementById('authModal').classList.add('hidden');
+                        renderContactsList();
                     } else {
                         localStorage.removeItem('nexus_user');
                     }
@@ -275,6 +309,113 @@
             }
         });
 
+        function openPlusMenu() { document.getElementById('plusModal').classList.remove('hidden'); }
+        function closePlusMenu() { 
+            document.getElementById('plusModal').classList.add('hidden');
+            document.getElementById('addFriendSection').classList.add('hidden');
+            document.getElementById('createGroupSection').classList.add('hidden');
+        }
+
+        function openAddFriendSection() {
+            document.getElementById('addFriendSection').classList.remove('hidden');
+            document.getElementById('createGroupSection').classList.add('hidden');
+        }
+
+        function openCreateGroupSection() {
+            document.getElementById('createGroupSection').classList.remove('hidden');
+            document.getElementById('addFriendSection').classList.add('hidden');
+        }
+
+        function searchAndAddUser() {
+            const target = document.getElementById('searchUserInput').value.trim();
+            const resText = document.getElementById('searchUserResult');
+            
+            if (!target) return;
+            if (target === myName) {
+                resText.innerText = "لا يمكنك إضافة نفسك!";
+                resText.className = "text-xs font-bold text-rose-500 block";
+                return;
+            }
+
+            socket.emit('search_user', { targetUsername: target }, res => {
+                if (res.found) {
+                    if (!mySavedContacts.some(c => c.username === target)) {
+                        mySavedContacts.push({ username: target, avatar: res.avatar, isGroup: false });
+                        localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
+                        renderContactsList();
+                        resText.innerText = "تمت إضافة الصديق بنجاح! 🎉";
+                        resText.className = "text-xs font-bold text-emerald-500 block";
+                        setTimeout(closePlusMenu, 1000);
+                    } else {
+                        resText.innerText = "هذا المستخدم مضاف لديك بالفعل!";
+                        resText.className = "text-xs font-bold text-amber-500 block";
+                    }
+                } else {
+                    resText.innerText = res.msg;
+                    resText.className = "text-xs font-bold text-rose-500 block";
+                }
+            });
+        }
+
+        function createNewGroup() {
+            const name = document.getElementById('groupNameInput').value.trim();
+            if (name) {
+                mySavedContacts.push({ username: name, avatar: '👥', isGroup: true });
+                localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
+                renderContactsList();
+                closePlusMenu();
+            }
+        }
+
+        socket.on('online_users_status', list => {
+            onlineUsersStatus = list;
+            renderContactsList();
+        });
+
+        function renderContactsList() {
+            const container = document.getElementById('myContactsList');
+            container.innerHTML = '';
+
+            if (mySavedContacts.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) للبحث وإضافة أصدقاء!</p>';
+                return;
+            }
+
+            mySavedContacts.forEach(c => {
+                const isOnline = onlineUsersStatus.includes(c.username);
+                const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
+                
+                container.innerHTML += `
+                    <div onclick="selectContact('${c.username}', '${c.avatar}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${c.avatar}</span>
+                            <div>
+                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">${c.username} ${c.isGroup ? '(مجتمع)' : ''}</span>
+                                <span class="text-[10px] text-slate-400">${c.isGroup ? 'مجتمع اعضاء' : (isOnline ? 'متصل الان' : 'غير متصل')}</span>
+                            </div>
+                        </div>
+                        <span class="w-2.5 h-2.5 ${dotColor} rounded-full"></span>
+                    </div>
+                `;
+            });
+        }
+
+        function selectContact(username, avatar, isGroup) {
+            currentTarget = username;
+            document.getElementById('targetUsername').innerText = username;
+            document.getElementById('targetAvatar').innerText = avatar;
+            
+            if (isGroup) {
+                document.getElementById('callButtons').classList.add('hidden');
+            } else {
+                document.getElementById('callButtons').classList.remove('hidden');
+            }
+
+            if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
+            renderMessages();
+        }
+
+        function showSidebar() { document.getElementById('sidebarPanel').classList.remove('hidden'); }
         function openSettings() { document.getElementById('settingsModal').classList.remove('hidden'); }
         function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
 
@@ -293,7 +434,6 @@
             }
         }
 
-        // عرض خطأ التسجيل بوضوح (مثل اسم المستخدم مستخدم مسبقاً)
         function showAuthError(msg) {
             const err = document.getElementById('authError');
             err.innerText = msg;
@@ -304,11 +444,9 @@
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             if (!u || !p) { showAuthError("يرجى إدخال اسم المستخدم وكلمة المرور"); return; }
             socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) {
-                    showAuthError(res.msg); // يعرض الخطأ بوضوح إذا كان الاسم مأخوذاً
-                } else {
+                if (!res.success) showAuthError(res.msg);
+                else {
                     showAuthError("");
-                    document.getElementById('authError').classList.add('hidden');
                     alert(res.msg);
                 }
             });
@@ -318,13 +456,13 @@
             const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
             if (!u || !p) { showAuthError("يرجى إدخال البيانات كاملة"); return; }
             socket.emit('login', { username: u, password: p }, res => {
-                if (!res.success) {
-                    showAuthError(res.msg);
-                } else {
+                if (!res.success) showAuthError(res.msg);
+                else {
                     myName = res.username;
                     localStorage.setItem('nexus_user', myName);
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('authModal').classList.add('hidden');
+                    renderContactsList();
                 }
             });
         }
@@ -343,9 +481,7 @@
             document.getElementById('emojiPicker').classList.add('hidden');
             const picker = document.getElementById('gifPicker');
             picker.classList.toggle('hidden');
-            if (!picker.classList.contains('hidden')) {
-                renderGifGrid(masterGifList);
-            }
+            if (!picker.classList.contains('hidden')) renderGifGrid(masterGifList);
         }
 
         function insertEmoji(emoji) {
@@ -356,17 +492,21 @@
         }
 
         function sendGif(url) {
+            if (!currentTarget) return;
+            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
             socket.emit('send_message', { 
-                to: currentTarget === "الجميع" ? null : currentTarget, 
+                to: currentTarget, 
                 message: '', 
                 file: url,
-                fileType: 'gif'
+                fileType: 'gif',
+                isGroup: currentObj?.isGroup
             });
             document.getElementById('gifPicker').classList.add('hidden');
         }
 
         async function toggleVoiceRecording() {
             const btn = document.getElementById('voiceRecordBtn');
+            if (!currentTarget) return alert("اختر صديقاً أولاً!");
             if (!isRecording) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -379,11 +519,13 @@
                         const reader = new FileReader();
                         reader.readAsDataURL(audioBlob);
                         reader.onloadend = () => {
+                            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
                             socket.emit('send_message', { 
-                                to: currentTarget === "الجميع" ? null : currentTarget, 
+                                to: currentTarget, 
                                 message: '', 
                                 file: reader.result,
-                                fileType: 'audio'
+                                fileType: 'audio',
+                                isGroup: currentObj?.isGroup
                             });
                         };
                         stream.getTracks().forEach(t => t.stop());
@@ -402,88 +544,34 @@
             }
         }
 
-        // استقبال قائمة المستخدمين وتخزينها للبحث
-        socket.on('update_users_list', list => {
-            allRegisteredUsers = list.filter(u => u.username !== myName);
-            displayUsers(allRegisteredUsers);
-        });
-
-        // وظيفة البحث عن الناس بالاسم
-        function searchUsers(query) {
-            const q = query.toLowerCase().trim();
-            if (!q) {
-                displayUsers(allRegisteredUsers);
-                return;
-            }
-            const filtered = allRegisteredUsers.filter(u => u.username.toLowerCase().includes(q));
-            displayUsers(filtered);
-        }
-
-        function displayUsers(list) {
-            const container = document.getElementById('usersList');
-            container.innerHTML = '';
-            if (list.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-4">لا يوجد مستخدمون بهذا الاسم</p>';
-                return;
-            }
-            list.forEach(u => {
-                const dotColor = u.isOnline ? 'bg-emerald-500' : 'bg-slate-400';
-                container.innerHTML += `
-                    <div onclick="selectUser('${u.username}', '${u.avatar}')" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">${u.avatar}</span>
-                            <div>
-                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">${u.username}</span>
-                                <span class="text-[10px] text-slate-400">${u.isOnline ? 'متصل الآن' : 'غير متصل'}</span>
-                            </div>
-                        </div>
-                        <span class="w-2.5 h-2.5 ${dotColor} rounded-full"></span>
-                    </div>
-                `;
-            });
-        }
-
-        function selectGlobalChat() {
-            currentTarget = "الجميع";
-            document.getElementById('targetUsername').innerText = "الدردشة العامة (للجميع)";
-            document.getElementById('targetAvatar').innerText = "🌍";
-            document.getElementById('callButtons').classList.add('hidden');
-            if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
-            renderMessages();
-        }
-
-        function selectUser(username, avatar) {
-            currentTarget = username;
-            document.getElementById('targetUsername').innerText = username;
-            document.getElementById('targetAvatar').innerText = avatar;
-            document.getElementById('callButtons').classList.remove('hidden');
-            if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
-            renderMessages();
-        }
-
-        function showSidebar() { document.getElementById('sidebarPanel').classList.remove('hidden'); }
-
         function sendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('msgInput');
-            if (input.value.trim()) {
-                socket.emit('send_message', { to: currentTarget === "الجميع" ? null : currentTarget, message: input.value.trim() });
+            if (input.value.trim() && currentTarget) {
+                const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+                socket.emit('send_message', { 
+                    to: currentTarget, 
+                    message: input.value.trim(),
+                    isGroup: currentObj?.isGroup 
+                });
                 input.value = '';
             }
         }
 
         function previewAndSendFile(event) {
             const file = event.target.files[0];
-            if (!file) return;
+            if (!file || !currentTarget) return;
 
             const isVideo = file.type.startsWith('video/');
             const reader = new FileReader();
             reader.onload = function(e) {
+                const currentObj = mySavedContacts.find(c => c.username === currentTarget);
                 socket.emit('send_message', { 
-                    to: currentTarget === "الجميع" ? null : currentTarget, 
+                    to: currentTarget, 
                     message: '', 
                     file: e.target.result,
-                    fileType: isVideo ? 'video' : 'image'
+                    fileType: isVideo ? 'video' : 'image',
+                    isGroup: currentObj?.isGroup
                 });
             };
             reader.readAsDataURL(file);
@@ -491,15 +579,21 @@
         }
 
         socket.on('receive_message', data => {
-            let key = currentTarget;
-            if (data.to === "الجميع") key = "الجميع";
-            else key = data.from === myName ? data.to : data.from;
-
-            if (!chatStore[key]) chatStore[key] = [];
-            chatStore[key].push(data);
+            const partner = data.from === myName ? data.to : data.from;
+            if (!chatStore[partner]) chatStore[partner] = [];
+            chatStore[partner].push(data);
             localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
 
-            if (key === currentTarget) renderMessages();
+            if (partner === currentTarget) renderMessages();
+        });
+
+        socket.on('receive_group_message', data => {
+            const groupName = data.to;
+            if (!chatStore[groupName]) chatStore[groupName] = [];
+            chatStore[groupName].push(data);
+            localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
+
+            if (groupName === currentTarget) renderMessages();
         });
 
         function renderMessages() {
@@ -543,7 +637,7 @@
                 if (audioTrack) {
                     isMicMuted = !isMicMuted;
                     audioTrack.enabled = !isMicMuted;
-                    document.getElementById('micIcon').className = isMicMuted ? "fa-solid fa-microphone-slash text-rose-500 text-lg" : "fa-solid fa-microphone text-emerald-400 text-lg";
+                    document.getElementById('micIcon').className = isMicMuted ? "fa-solid fa-microphone-slash text-rose-500 text-base" : "fa-solid fa-microphone text-emerald-400 text-base";
                 }
             }
         }
@@ -554,7 +648,7 @@
                 if (videoTrack) {
                     isCamOff = !isCamOff;
                     videoTrack.enabled = !isCamOff;
-                    document.getElementById('camIcon').className = isCamOff ? "fa-solid fa-video-slash text-rose-500 text-lg" : "fa-solid fa-video text-emerald-400 text-lg";
+                    document.getElementById('camIcon').className = isCamOff ? "fa-solid fa-video-slash text-rose-500 text-base" : "fa-solid fa-video text-emerald-400 text-base";
                 }
             }
         }
@@ -587,12 +681,9 @@
 
         socket.on('incoming_call', async ({ from, offer, isVideo }) => {
             playNativeRingtone();
-            document.getElementById('incomingCallAlert').classList.remove('hidden');
-            document.getElementById('incomingCallAlert').innerText = `📞 مكالمة واردة من ${from}...`;
 
             if (confirm(`مكالمة واردة من ${from}.. هل تريد الرد؟`)) {
                 stopNativeRingtone();
-                document.getElementById('incomingCallAlert').classList.add('hidden');
                 currentTarget = from;
                 document.getElementById('callOverlay').classList.remove('hidden');
                 try {
@@ -620,7 +711,6 @@
                 }
             } else {
                 stopNativeRingtone();
-                document.getElementById('incomingCallAlert').classList.add('hidden');
                 socket.emit('end_call', { to: from });
             }
         });
@@ -638,11 +728,10 @@
 
         function endCall(notify = true) {
             stopNativeRingtone();
-            if (notify && currentTarget !== "الجميع") socket.emit('end_call', { to: currentTarget });
+            if (notify && currentTarget) socket.emit('end_call', { to: currentTarget });
             if (peerConnection) peerConnection.close();
             if (localStream) localStream.getTracks().forEach(t => t.stop());
             document.getElementById('callOverlay').classList.add('hidden');
-            document.getElementById('incomingCallAlert').classList.add('hidden');
         }
     </script>
 </body>
