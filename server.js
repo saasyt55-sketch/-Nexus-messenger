@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const usersDB = new Map(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
+const friendRequests = new Map(); // تخزين طلبات الصداقة: username -> [list of senders]
 
 io.on('connection', (socket) => {
 
@@ -29,6 +30,7 @@ io.on('connection', (socket) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         usersDB.set(cleanName, { passwordHash: hashedPassword, avatar: avatar || '⚡' });
+        friendRequests.set(cleanName, []);
         callback({ success: true, msg: 'تم إنشاء الحساب بنجاح!' });
     });
 
@@ -60,19 +62,66 @@ io.on('connection', (socket) => {
         }
     });
 
-    // البحث عن مستخدم باليوزر
-    socket.on('search_user', ({ targetUsername }, callback) => {
+    // البحث عن مستخدم لإرسال طلب صداقة
+    socket.on('send_friend_request', ({ targetUsername }, callback) => {
+        const sender = socketToUser.get(socket.id);
         const cleanTarget = targetUsername.trim();
-        if (usersDB.has(cleanTarget)) {
-            const user = usersDB.get(cleanTarget);
-            callback({ 
-                found: true, 
-                username: cleanTarget, 
-                avatar: user.avatar,
-                isOnline: onlineUsers.has(cleanTarget)
-            });
+
+        if (!usersDB.has(cleanTarget)) {
+            return callback({ success: false, msg: 'المستخدم غير موجود!' });
+        }
+        if (cleanTarget === sender) {
+            return callback({ success: false, msg: 'لا يمكنك إضافة نفسك!' });
+        }
+
+        if (!friendRequests.has(cleanTarget)) {
+            friendRequests.set(cleanTarget, []);
+        }
+
+        const requestsList = friendRequests.get(cleanTarget);
+        if (requestsList.includes(sender)) {
+            return callback({ success: false, msg: 'تم إرسال طلب صداقة مسبقاً لهذا المستخدم!' });
+        }
+
+        requestsList.push(sender);
+        
+        // إشعار المستخدم المستهدف فوراً إذا كان متصلاً
+        const targetSocketId = onlineUsers.get(cleanTarget);
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('new_friend_request', { from: sender });
+        }
+
+        callback({ success: true, msg: 'تم إرسال طلب الصداقة بنجاح! ⏳' });
+    });
+
+    // جلب طلبات الصداقة الواردة
+    socket.on('get_friend_requests', (callback) => {
+        const username = socketToUser.get(socket.id);
+        if (!username) return callback([]);
+        const requests = friendRequests.get(username) || [];
+        const requestsData = requests.map(reqName => ({
+            username: reqName,
+            avatar: usersDB.get(reqName)?.avatar || '⚡'
+        }));
+        callback(requestsData);
+    });
+
+    // الرد على طلب الصداقة (قبول أو رفض)
+    socket.on('respond_friend_request', ({ fromUser, accept }, callback) => {
+        const username = socketToUser.get(socket.id);
+        if (!username) return;
+
+        let requests = friendRequests.get(username) || [];
+        friendRequests.set(username, requests.filter(r => r !== fromUser));
+
+        if (accept) {
+            callback({ success: true, friend: { username: fromUser, avatar: usersDB.get(fromUser)?.avatar || '⚡' } });
+            const senderSocket = onlineUsers.get(fromUser);
+            if (senderSocket) {
+                io.to(senderSocket).emit('friend_request_accepted', { by: username });
+            }
         } else {
-            callback({ found: false, msg: 'المستخدم غير موجود' });
+            callback({ success: false });
         }
     });
 
@@ -147,4 +196,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v5.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v6.0 يعمل بنجاح على المنفذ: ${PORT}`));
