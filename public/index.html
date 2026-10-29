@@ -10,33 +10,47 @@
     <script src="/socket.io/socket.io.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; }
+        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        
+        /* أنيميشن الجوال وتأثيرات اللمس */
+        .mobile-slide-enter { animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes slideIn { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .btn-active { active:scale-95 transition-transform; }
+        
         .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
         .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
         .filter-cyber { filter: hue-rotate(180deg) saturate(140%); }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100">
 
-    <!-- نافذة تسجيل الدخول والتوثيق الحقيقي -->
-    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+    <!-- نافذة التسجيل والدخول مع رمز التحقق 3 أرقام -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-1">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الإلكتروني الحقيقي واسم مستخدم موثق</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الموثق مع رمز تحقق مكوّن من 3 أرقام</p>
             
-            <div class="space-y-3">
+            <div id="authFields" class="space-y-3">
                 <input type="email" id="authEmail" placeholder="البريد الإلكتروني الحقيقي (Email)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="text" id="authUsername" placeholder="اسم المستخدم (Username فريد)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="password" id="authPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
+                
+                <!-- حقل إدخال الرمز من 3 أرقام -->
+                <div id="codeSection" class="hidden pt-2">
+                    <div class="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded-2xl mb-2">
+                        <p id="codeNotice" class="text-xs text-cyan-400 font-bold mb-1"></p>
+                    </div>
+                    <input type="text" id="authCode" maxlength="3" placeholder="أدخل الرمز المكون من 3 أرقام" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border-2 border-cyan-500 text-cyan-400 font-black tracking-widest text-center text-lg focus:outline-none">
+                </div>
             </div>
 
             <p id="authError" class="text-rose-500 text-xs mt-3 hidden font-bold"></p>
 
             <div class="flex gap-3 mt-6">
-                <button type="button" onclick="handleLogin()" class="flex-1 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">تسجيل الدخول</button>
-                <button type="button" onclick="handleRegister()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition">حساب جديد</button>
+                <button type="button" onclick="handleLogin()" class="flex-1 py-3 bg-cyan-500 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">تسجيل الدخول</button>
+                <button type="button" id="regBtn" onclick="handleRegisterProcess()" class="flex-1 py-3 bg-slate-200 dark:bg-slate-800 active:scale-95 text-cyan-600 dark:text-cyan-400 font-black rounded-xl text-sm transition">حساب جديد</button>
             </div>
         </div>
     </div>
@@ -45,12 +59,12 @@
     <div class="w-full h-full sm:max-w-6xl sm:h-[92vh] sm:rounded-3xl overflow-hidden flex relative shadow-2xl border-0 sm:border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
         
         <!-- القائمة الجانبية -->
-        <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300">
+        <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300 mobile-slide-enter">
             <div>
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                         <h2 class="font-black text-cyan-600 dark:text-cyan-400">الدردشات</h2>
-                        <button type="button" onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center hover:bg-cyan-400 transition shadow-lg">
+                        <button type="button" onclick="openPlusMenu()" title="إضافة صديق أو مجموعة" class="w-8 h-8 rounded-full bg-cyan-500 text-slate-950 font-black flex items-center justify-center active:scale-90 transition shadow-lg">
                             <i class="fa-solid fa-plus text-xs"></i>
                         </button>
                     </div>
@@ -72,7 +86,7 @@
         <div id="chatPanel" class="w-full flex-1 flex flex-col bg-slate-50/50 dark:bg-slate-900/40 relative h-full">
             <div id="chatHeader" class="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <div class="flex items-center gap-3">
-                    <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+                    <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                     <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">💬</div>
@@ -97,7 +111,7 @@
             </div>
 
             <!-- إيموجيات -->
-            <div id="emojiPicker" class="hidden absolute bottom-20 left-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-6 gap-2 z-30">
+            <div id="emojiPicker" class="hidden absolute bottom-20 left-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl grid grid-cols-6 gap-2 z-30 mobile-slide-enter">
                 <span onclick="insertEmoji('😀')" class="cursor-pointer text-xl hover:scale-125 transition">😀</span>
                 <span onclick="insertEmoji('😂')" class="cursor-pointer text-xl hover:scale-125 transition">😂</span>
                 <span onclick="insertEmoji('❤️')" class="cursor-pointer text-xl hover:scale-125 transition">❤️</span>
@@ -107,12 +121,12 @@
             </div>
 
             <!-- مكتبة GIF الضخمة والموسعة بالكامل -->
-            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-80 h-96">
+            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-80 h-96 mobile-slide-enter">
                 <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في مكتبة الـ GIFs الضخمة..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
-            <!-- شريط المراسلة -->
+            <!-- شريط المراسلة المعزز بزر المايك الصوتي المباشر -->
             <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
                     <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition" title="إيموجي">
@@ -128,13 +142,18 @@
                     </label>
                     <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="previewAndSendFile(event)">
 
+                    <!-- زر الدردشة الصوتية والمايك المباشر -->
+                    <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-rose-600 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition active:scale-90" title="تسجيل صوتي">
+                        <i id="voiceIcon" class="fa-solid fa-microphone text-lg"></i>
+                    </button>
+
                     <input type="text" id="msgInput" placeholder="اكتب رسالتك..." class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-cyan-500">
-                    <button type="submit" class="px-5 sm:px-6 py-3 bg-cyan-500 active:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">إرسال</button>
+                    <button type="submit" class="px-5 sm:px-6 py-3 bg-cyan-500 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">إرسال</button>
                 </form>
             </div>
 
             <!-- شاشة المكالمات وفلاتر سناب -->
-            <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6">
+            <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6 mobile-slide-enter">
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover transition-all duration-300"></video>
                     <video id="localVideo" autoplay playsinline muted class="absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300"></video>
@@ -163,7 +182,7 @@
     </div>
 
     <!-- نافذة زر (+) وزر طلبات الصداقة -->
-    <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white">إضافة وخيارات ✨</h2>
             
@@ -204,7 +223,7 @@
     </div>
 
     <!-- الإعدادات -->
-    <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات الحساب ⚙️</h2>
             <div class="space-y-3 text-right">
@@ -229,12 +248,13 @@
         const socket = io();
         let myName = "", myEmail = "", currentTarget = "", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
+        let mediaRecorder, audioChunks = [], isRecording = false;
+        let isCodeStep = false;
         
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
 
-        // مكتبة GIF ضخمة جداً، منوعة وموسعة بالكامل وبدون تكرار
         const masterGifList = [
             { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh smile" },
             { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance celebration" },
@@ -248,12 +268,7 @@
             { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast drive" },
             { url: "https://media.giphy.com/media/g9582DNuQppxC/giphy.gif", tags: "موافق نعم yes ok agreed" },
             { url: "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif", tags: "رقص طرب party dance music" },
-            { url: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif", tags: "بصمة ذكاء smart genius idea" },
-            { url: "https://media.giphy.com/media/3ohzdIuqJoo8YdKlnW/giphy.gif", tags: "سلام باي goodbye bye see you" },
-            { url: "https://media.giphy.com/media/l0ExncehJzexFpRHq/giphy.gif", tags: "أكل طعام food yum hungry" },
-            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "قهوة صباح coffee morning drink" },
-            { url: "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif", tags: "انميشن كارتون animation funny" },
-            { url: "https://media.giphy.com/media/26u6dTP6p4y0iyBIQ/giphy.gif", tags: "ألعاب جيمينج gaming gamer win" }
+            { url: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif", tags: "بصمة ذكاء smart genius idea" }
         ];
 
         function renderGifGrid(list) {
@@ -298,6 +313,90 @@
                 });
             }
         });
+
+        // التعامل مع الخطوات وحفظ الرمز المكون من 3 أرقام
+        function handleRegisterProcess() {
+            const email = document.getElementById('authEmail').value;
+            const u = document.getElementById('authUsername').value;
+            const p = document.getElementById('authPassword').value;
+            const codeInput = document.getElementById('authCode').value;
+
+            if (!isCodeStep) {
+                if (!email || !u || !p) { showAuthError("يرجى ملء جميع الحقول أولاً!"); return; }
+                socket.emit('request_verification_code', { email, username: u }, res => {
+                    if (!res.success) {
+                        showAuthError(res.msg);
+                    } else {
+                        showAuthError("");
+                        isCodeStep = true;
+                        document.getElementById('codeSection').classList.remove('hidden');
+                        document.getElementById('codeNotice').innerText = res.msg;
+                        document.getElementById('regBtn').innerText = "تأكيد الرمز والتسجيل";
+                    }
+                });
+            } else {
+                if (!codeInput || codeInput.trim().length !== 3) {
+                    showAuthError("يرجى إدخال الرمز المكون من 3 أرقام بدقة!");
+                    return;
+                }
+                socket.emit('register_with_code', { email, username: u, password: p, code: codeInput, avatar: '⚡' }, res => {
+                    if (!res.success) {
+                        showAuthError(res.msg);
+                    } else {
+                        showAuthError("");
+                        alert(res.msg);
+                        isCodeStep = false;
+                        document.getElementById('codeSection').classList.add('hidden');
+                        document.getElementById('regBtn').innerText = "حساب جديد";
+                    }
+                });
+            }
+        }
+
+        // تسجيل الرسائل الصوتية مباشرة عبر المايك
+        async function toggleVoiceRecording() {
+            const btn = document.getElementById('voiceRecordBtn');
+            const icon = document.getElementById('voiceIcon');
+            if (!currentTarget) return alert("اختر صديقاً أولاً لترسل له الملاحظة الصوتية!");
+
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+                            socket.emit('send_message', { 
+                                to: currentTarget, 
+                                message: '', 
+                                file: reader.result,
+                                fileType: 'audio',
+                                isGroup: currentObj?.isGroup
+                            });
+                        };
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
+                    icon.className = "fa-solid fa-square text-lg";
+                } catch (err) {
+                    alert("تعذر الوصول للمايكروفون، يرجى السماح بالصلاحية!");
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                btn.classList.remove('bg-rose-600', 'text-white', 'animate-pulse');
+                icon.className = "fa-solid fa-microphone text-lg";
+            }
+        }
 
         function openPlusMenu() { 
             const modal = document.getElementById('plusModal');
@@ -430,7 +529,7 @@
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
                 container.innerHTML += `
-                    <div onclick="selectContact('${c.username}', '${c.avatar}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm">
+                    <div onclick="selectContact('${c.username}', '${c.avatar}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${c.avatar}</span>
                             <div>
@@ -478,23 +577,6 @@
             if(!err) return;
             err.innerText = msg;
             err.classList.remove('hidden');
-        }
-
-        function handleRegister() {
-            const email = document.getElementById('authEmail').value;
-            const u = document.getElementById('authUsername').value;
-            const p = document.getElementById('authPassword').value;
-            
-            if (!email || !u || !p) { showAuthError("يرجى إدخال البريد الإلكتروني، اسم المستخدم، وكلمة المرور"); return; }
-            
-            socket.emit('register', { email, username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) {
-                    showAuthError(res.msg);
-                } else {
-                    showAuthError("");
-                    alert(res.msg);
-                }
-            });
         }
 
         function handleLogin() {
@@ -598,7 +680,19 @@
             const list = chatStore[currentTarget] || [];
             list.forEach(m => {
                 const isMe = m.from === myName;
-                let content = m.file ? (m.fileType === 'video' ? `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>` : `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow" onclick="window.open('${m.file}')"/>`) : `<p class="text-sm leading-relaxed">${m.message}</p>`;
+                let content = '';
+
+                if (m.file) {
+                    if (m.fileType === 'video') {
+                        content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
+                    } else if (m.fileType === 'audio') {
+                        content = `<audio src="${m.file}" controls class="w-full max-w-xs"></audio>`;
+                    } else {
+                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow" onclick="window.open('${m.file}')"/>`;
+                    }
+                } else {
+                    content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
+                }
 
                 box.innerHTML += `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
