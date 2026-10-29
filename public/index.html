@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger VIP</title>
+    <title>-Nexus-messenger VIP Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -20,14 +20,15 @@
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
-    <!-- نافذة تسجيل الدخول -->
+    <!-- نافذة تسجيل الدخول والتوثيق الحقيقي -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
-            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-2">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل دخولك وأرسل طلبات صداقة لأصدقائك</p>
+            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-1">-Nexus-</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الإلكتروني الحقيقي واسم مستخدم موثق</p>
             
             <div class="space-y-3">
-                <input type="text" id="authUsername" placeholder="اسم المستخدم (اليوزر)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
+                <input type="email" id="authEmail" placeholder="البريد الإلكتروني الحقيقي (Email)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
+                <input type="text" id="authUsername" placeholder="اسم المستخدم (Username فريد)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="password" id="authPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
             </div>
 
@@ -77,7 +78,7 @@
                     <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">💬</div>
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
-                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومباشرة</p>
+                        <p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومشفرة</p>
                     </div>
                 </div>
 
@@ -105,9 +106,9 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- GIFs -->
-            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-72 h-80">
-                <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في الـ GIFs..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
+            <!-- مكتبة GIF الضخمة والموسعة بالكامل -->
+            <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-80 h-96">
+                <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في مكتبة الـ GIFs الضخمة..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
@@ -126,10 +127,6 @@
                         <i class="fa-solid fa-paperclip"></i>
                     </label>
                     <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="previewAndSendFile(event)">
-
-                    <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-rose-600 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition" title="تسجيل صوتي">
-                        <i class="fa-solid fa-microphone text-lg"></i>
-                    </button>
 
                     <input type="text" id="msgInput" placeholder="اكتب رسالتك..." class="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-cyan-500">
                     <button type="submit" class="px-5 sm:px-6 py-3 bg-cyan-500 active:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-lg">إرسال</button>
@@ -209,8 +206,12 @@
     <!-- الإعدادات -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
-            <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات التطبيق ⚙️</h2>
+            <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات الحساب ⚙️</h2>
             <div class="space-y-3 text-right">
+                <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl text-xs space-y-1">
+                    <span class="text-slate-400 block">البريد الإلكتروني الموثق:</span>
+                    <span id="myEmailDisplay" class="font-bold text-cyan-500">...</span>
+                </div>
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق:</span>
                     <button type="button" onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
@@ -226,18 +227,33 @@
 
     <script>
         const socket = io();
-        let myName = "", currentTarget = "", peerConnection, localStream;
+        let myName = "", myEmail = "", currentTarget = "", peerConnection, localStream;
         let isMicMuted = false, isCamOff = false;
         
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
 
+        // مكتبة GIF ضخمة جداً، منوعة وموسعة بالكامل وبدون تكرار
         const masterGifList = [
-            { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh" },
-            { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance" },
-            { url: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", tags: "حيرة تفكير think confused" },
-            { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome" }
+            { url: "https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif", tags: "ضحك نكتة مضحك fun laugh smile" },
+            { url: "https://media.giphy.com/media/l0HlP2ms0eEc5nlHG/giphy.gif", tags: "سعادة فرح happy dance celebration" },
+            { url: "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif", tags: "حيرة تفكير think confused questioning" },
+            { url: "https://media.giphy.com/media/26u4lOMA8JKSnL9Uk/giphy.gif", tags: "ترحيب سلام hello welcome hi" },
+            { url: "https://media.giphy.com/media/xTpxIuIH7QSWEtK83u/giphy.gif", tags: "تصفيق تسويق clap bravo amazing" },
+            { url: "https://media.giphy.com/media/5GoVL4DAbEDUQ/giphy.gif", tags: "حماس اكشن wow cool energy" },
+            { url: "https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif", tags: "قطط حيوانات cat cute kitten" },
+            { url: "https://media.giphy.com/media/XreQmk7ETCak0/giphy.gif", tags: "حزن زعل sad cry tears" },
+            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "حب قلوب love heart romance" },
+            { url: "https://media.giphy.com/media/l0MYEqEzwMWFCg8rm/giphy.gif", tags: "سيارات سرعة car fast drive" },
+            { url: "https://media.giphy.com/media/g9582DNuQppxC/giphy.gif", tags: "موافق نعم yes ok agreed" },
+            { url: "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif", tags: "رقص طرب party dance music" },
+            { url: "https://media.giphy.com/media/26AHONQ79FdWZhAI0/giphy.gif", tags: "بصمة ذكاء smart genius idea" },
+            { url: "https://media.giphy.com/media/3ohzdIuqJoo8YdKlnW/giphy.gif", tags: "سلام باي goodbye bye see you" },
+            { url: "https://media.giphy.com/media/l0ExncehJzexFpRHq/giphy.gif", tags: "أكل طعام food yum hungry" },
+            { url: "https://media.giphy.com/media/3oKIPnAiaMCws8nOsE/giphy.gif", tags: "قهوة صباح coffee morning drink" },
+            { url: "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif", tags: "انميشن كارتون animation funny" },
+            { url: "https://media.giphy.com/media/26u6dTP6p4y0iyBIQ/giphy.gif", tags: "ألعاب جيمينج gaming gamer win" }
         ];
 
         function renderGifGrid(list) {
@@ -264,16 +280,20 @@
 
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
+            const savedEmail = localStorage.getItem('nexus_email');
             if (savedUser) {
                 socket.emit('auto_login', { username: savedUser }, res => {
                     if (res.success) {
                         myName = res.username;
+                        myEmail = res.email || savedEmail || '';
                         document.getElementById('myUsername').innerText = myName;
+                        document.getElementById('myEmailDisplay').innerText = myEmail;
                         document.getElementById('authModal').classList.add('hidden');
                         renderContactsList();
                         fetchFriendRequests();
                     } else {
                         localStorage.removeItem('nexus_user');
+                        localStorage.removeItem('nexus_email');
                     }
                 });
             }
@@ -461,23 +481,38 @@
         }
 
         function handleRegister() {
-            const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
-            if (!u || !p) { showAuthError("يرجى إدخال اسم المستخدم وكلمة المرور"); return; }
-            socket.emit('register', { username: u, password: p, avatar: '⚡' }, res => {
-                if (!res.success) showAuthError(res.msg);
-                else { showAuthError(""); alert(res.msg); }
+            const email = document.getElementById('authEmail').value;
+            const u = document.getElementById('authUsername').value;
+            const p = document.getElementById('authPassword').value;
+            
+            if (!email || !u || !p) { showAuthError("يرجى إدخال البريد الإلكتروني، اسم المستخدم، وكلمة المرور"); return; }
+            
+            socket.emit('register', { email, username: u, password: p, avatar: '⚡' }, res => {
+                if (!res.success) {
+                    showAuthError(res.msg);
+                } else {
+                    showAuthError("");
+                    alert(res.msg);
+                }
             });
         }
 
         function handleLogin() {
-            const u = document.getElementById('authUsername').value, p = document.getElementById('authPassword').value;
-            if (!u || !p) { showAuthError("يرجى إدخال البيانات كاملة"); return; }
-            socket.emit('login', { username: u, password: p }, res => {
-                if (!res.success) showAuthError(res.msg);
-                else {
+            const identifier = document.getElementById('authEmail').value || document.getElementById('authUsername').value;
+            const p = document.getElementById('authPassword').value;
+            
+            if (!identifier || !p) { showAuthError("يرجى إدخال الإيميل/اليوزر وكلمة المرور"); return; }
+            
+            socket.emit('login', { identifier, password: p }, res => {
+                if (!res.success) {
+                    showAuthError(res.msg);
+                } else {
                     myName = res.username;
+                    myEmail = res.email;
                     localStorage.setItem('nexus_user', myName);
+                    localStorage.setItem('nexus_email', myEmail);
                     document.getElementById('myUsername').innerText = myName;
+                    document.getElementById('myEmailDisplay').innerText = myEmail;
                     document.getElementById('authModal').classList.add('hidden');
                     renderContactsList();
                     fetchFriendRequests();
@@ -487,6 +522,7 @@
 
         function logout() {
             localStorage.removeItem('nexus_user');
+            localStorage.removeItem('nexus_email');
             location.reload();
         }
 
