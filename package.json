@@ -1,7 +1,7 @@
 {
   "name": "nexus-messenger",
-  "version": "3.3.0",
-  "description": "Nexus Messenger Ultimate Edition with Local Stable GIF Library",
+  "version": "4.0.0",
+  "description": "Nexus Messenger",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
