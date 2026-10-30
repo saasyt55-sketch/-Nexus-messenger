@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>-Nexus-messenger VIP Pro</title>
+
+    <!-- 📱 إعدادات أيقونة الشاشة الرئيسية للآيفون (Apple Touch Icon) -->
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+
+    <!-- 🚀 جعل التطبيق يفتح بدون شريط متصفح Safari (Full Screen Web App) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="-Nexus-">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,10 +26,8 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         
-        /* أنيميشن الجوال وتأثيرات اللمس */
         .mobile-slide-enter { animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes slideIn { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .btn-active { active:scale-95 transition-transform; }
         
         .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
         .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
@@ -37,7 +47,6 @@
                 <input type="text" id="authUsername" placeholder="اسم المستخدم (Username فريد)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 <input type="password" id="authPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
                 
-                <!-- حقل إدخال الرمز من 3 أرقام -->
                 <div id="codeSection" class="hidden pt-2">
                     <div class="bg-cyan-500/10 border border-cyan-500/30 p-3 rounded-2xl mb-2">
                         <p id="codeNotice" class="text-xs text-cyan-400 font-bold mb-1"></p>
@@ -120,7 +129,7 @@
                 <span onclick="insertEmoji('✨')" class="cursor-pointer text-xl hover:scale-125 transition">✨</span>
             </div>
 
-            <!-- مكتبة GIF الضخمة والموسعة بالكامل -->
+            <!-- مكتبة GIF -->
             <div id="gifPicker" class="hidden absolute bottom-20 left-16 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex flex-col z-35 w-80 h-96 mobile-slide-enter">
                 <input type="text" id="gifSearchInput" onkeyup="filterGifs(this.value)" placeholder="ابحث في مكتبة الـ GIFs الضخمة..." class="w-full mb-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none border border-slate-300 dark:border-slate-700">
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
@@ -142,7 +151,6 @@
                     </label>
                     <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="previewAndSendFile(event)">
 
-                    <!-- زر الدردشة الصوتية والمايك المباشر -->
                     <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-rose-600 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition active:scale-90" title="تسجيل صوتي">
                         <i id="voiceIcon" class="fa-solid fa-microphone text-lg"></i>
                     </button>
@@ -152,7 +160,7 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات وفلاتر سناب -->
+            <!-- شاشة المكالمات -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6 mobile-slide-enter">
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover transition-all duration-300"></video>
@@ -199,20 +207,17 @@
                 </button>
             </div>
 
-            <!-- قسم إرسال طلب صداقة -->
             <div id="addFriendSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="searchUserInput" placeholder="اكتب يوزر الشخص بالظبط..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
                 <button type="button" onclick="sendFriendReq()" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">إرسال طلب الصداقة</button>
                 <p id="searchUserResult" class="text-xs font-bold hidden"></p>
             </div>
 
-            <!-- قسم عرض طلبات الصداقة الواردة -->
             <div id="friendRequestsSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3 max-h-48 overflow-y-auto custom-scrollbar">
                 <p class="text-xs text-slate-400">الطلبات الواردة:</p>
                 <div id="friendRequestsList" class="space-y-2"></div>
             </div>
 
-            <!-- قسم إنشاء جروب -->
             <div id="createGroupSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="groupNameInput" placeholder="اسم المجتمع / الجروب..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
                 <button type="button" onclick="createNewGroup()" class="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl text-xs">إنشاء المجتمع</button>
@@ -314,7 +319,6 @@
             }
         });
 
-        // التعامل مع الخطوات وحفظ الرمز المكون من 3 أرقام
         function handleRegisterProcess() {
             const email = document.getElementById('authEmail').value;
             const u = document.getElementById('authUsername').value;
@@ -353,7 +357,6 @@
             }
         }
 
-        // تسجيل الرسائل الصوتية مباشرة عبر المايك
         async function toggleVoiceRecording() {
             const btn = document.getElementById('voiceRecordBtn');
             const icon = document.getElementById('voiceIcon');
