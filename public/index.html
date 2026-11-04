@@ -43,7 +43,7 @@
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100">
 
-    <!-- نافذة تسجيل الدخول والتوثيق برمز 3 أرقام -->
+    <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-1">-Nexus-</h1>
@@ -144,7 +144,7 @@
                 <div id="gifResults" class="flex-1 grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar"></div>
             </div>
 
-            <!-- شريط المراسلة مع مؤشر الكتابة التلقائي -->
+            <!-- شريط المراسلة -->
             <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/60 backdrop-blur-md">
                 <form onsubmit="sendMessage(event)" class="flex items-center gap-2 relative">
                     <button type="button" onclick="toggleEmojiPicker()" class="w-11 h-11 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white rounded-xl flex items-center justify-center text-cyan-600 dark:text-cyan-400 transition" title="إيموجي">
@@ -169,7 +169,7 @@
                 </form>
             </div>
 
-            <!-- شاشة المكالمات بنظام أنظمة التشغيل (iOS/Android/Mac/Win) -->
+            <!-- شاشة المكالمات -->
             <div id="callOverlay" class="hidden absolute inset-0 bg-black/95 backdrop-blur-2xl z-50 flex flex-col items-center justify-between p-4 sm:p-6 mobile-slide-enter">
                 <div class="w-full flex-1 relative rounded-3xl overflow-hidden border border-white/10 flex items-center justify-center bg-neutral-900 shadow-2xl">
                     <video id="remoteVideo" autoplay playsinline class="w-full h-full object-cover transition-all duration-300"></video>
@@ -236,7 +236,7 @@
         </div>
     </div>
 
-    <!-- الإعدادات -->
+    <!-- الإعدادات (مع زر تفعيل الإشعارات بطلب إذن صريح) -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات الحساب ⚙️</h2>
@@ -245,6 +245,16 @@
                     <span class="text-slate-400 block">البريد الإلكتروني الموثق:</span>
                     <span id="myEmailDisplay" class="font-bold text-cyan-500">...</span>
                 </div>
+                
+                <!-- زر طلب صلاحية وتفعيل الإشعارات صراحة -->
+                <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">تفعيل الإشعارات:</span>
+                    <button type="button" onclick="requestNotificationPermission()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-bell"></i>
+                        <span>السماح</span>
+                    </button>
+                </div>
+
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">مظهر التطبيق:</span>
                     <button type="button" onclick="toggleTheme()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
@@ -270,9 +280,20 @@
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
 
-        // تفعيل طلب إذن الإشعارات المتعددة المنصات (Windows, Linux, Mac, iOS, Android)
-        if (window.Notification && Notification.permission !== "granted") {
-            Notification.requestPermission();
+        // دالة طلب إذن الإشعارات عند ضغط المستخدم في الإعدادات
+        function requestNotificationPermission() {
+            if (!window.Notification) {
+                alert("متصفحك لا يدعم الإشعارات!");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("تم تفعيل الإشعارات بنجاح! ستصلك تنبيهات الرسائل والمكالمات.");
+                    new Notification("Nexus Messenger", { body: "الإشعارات تعمل الآن بنجاح تام! 🚀" });
+                } else {
+                    alert("تم رفض إذن الإشعارات. يجدر بك السماح لها من إعدادات المتصفح.");
+                }
+            });
         }
 
         function showDesktopNotification(title, body) {
@@ -381,7 +402,6 @@
             }
         }
 
-        // إرسال مؤشر الكتابة تلقائياً
         function handleTypingInput() {
             if (!currentTarget) return;
             const currentObj = mySavedContacts.find(c => c.username === currentTarget);
