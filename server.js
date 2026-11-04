@@ -13,7 +13,7 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); // username -> { email, passwordHash, avatar }
+const usersDB = new Map(); 
 const emailsDB = new Set(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
@@ -142,7 +142,6 @@ io.on('connection', (socket) => {
         io.emit('online_users_status', Array.from(onlineUsers.keys()));
     }
 
-    // مؤشر الكتابة (Typing Indicator)
     socket.on('typing', ({ to, isTyping, isGroup }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
@@ -212,4 +211,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v9.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v9.1 يعمل بنجاح على المنفذ: ${PORT}`));
