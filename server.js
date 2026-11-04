@@ -18,7 +18,7 @@ const emailsDB = new Set();
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
 const friendRequests = new Map(); 
-const tempVerifyCodes = new Map(); // email -> 3-digit code
+const tempVerifyCodes = new Map(); 
 
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,44 +27,28 @@ function isValidEmail(email) {
 
 io.on('connection', (socket) => {
 
-    // 1. طلب رمز تحقق من 3 أرقام
     socket.on('request_verification_code', ({ email, username }, callback) => {
         const cleanEmail = email ? email.trim().toLowerCase() : '';
         const cleanName = username ? username.trim() : '';
 
-        if (!cleanEmail || !cleanName) {
-            return callback({ success: false, msg: 'يرجى إدخال البريد واسم المستخدم أولاً' });
-        }
-        if (!isValidEmail(cleanEmail)) {
-            return callback({ success: false, msg: 'البريد الإلكتروني غير صالح' });
-        }
-        if (emailsDB.has(cleanEmail)) {
-            return callback({ success: false, msg: 'هذا البريد الإلكتروني مسجل مسبقاً!' });
-        }
-        if (usersDB.has(cleanName)) {
-            return callback({ success: false, msg: 'اسم المستخدم (اليوزر) مستخدم مسبقاً!' });
-        }
+        if (!cleanEmail || !cleanName) return callback({ success: false, msg: 'يرجى إدخال البريد واسم المستخدم' });
+        if (!isValidEmail(cleanEmail)) return callback({ success: false, msg: 'البريد الإلكتروني غير صالح' });
+        if (emailsDB.has(cleanEmail)) return callback({ success: false, msg: 'هذا البريد مسجل مسبقاً!' });
+        if (usersDB.has(cleanName)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
 
-        // توليد رمز عشوائي مكون من 3 أرقام فقط (من 100 إلى 999)
         const randomCode = Math.floor(100 + Math.random() * 900).toString();
         tempVerifyCodes.set(cleanEmail, randomCode);
 
-        // إرجاع الرمز للواجهة للتحقق
-        callback({ 
-            success: true, 
-            msg: `تم جهوزية الرمز! رمزك جاهز للتحقق: [ ${randomCode} ]`,
-            generatedCode: randomCode
-        });
+        callback({ success: true, msg: `تم تجهيز رمز التحقق: [ ${randomCode} ]` });
     });
 
-    // 2. إتمام التسجيل بعد تأكيد الرمز المكون من 3 أرقام
     socket.on('register_with_code', async ({ email, username, password, code, avatar }, callback) => {
         const cleanEmail = email ? email.trim().toLowerCase() : '';
         const cleanName = username ? username.trim() : '';
         const savedCode = tempVerifyCodes.get(cleanEmail);
 
         if (!savedCode || savedCode !== code.trim()) {
-            return callback({ success: false, msg: 'رمز التحقق المكون من 3 أرقام غير صحيح!' });
+            return callback({ success: false, msg: 'رمز التحقق غير صحيح!' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -73,20 +57,17 @@ io.on('connection', (socket) => {
         friendRequests.set(cleanName, []);
         tempVerifyCodes.delete(cleanEmail);
 
-        callback({ success: true, msg: 'تم توثيق بريدك الإلكتروني وإنشاء الحساب بنجاح! 🎉' });
+        callback({ success: true, msg: 'تم توثيق بريدك وإنشاء الحساب بنجاح! 🎉' });
     });
 
     socket.on('login', async ({ identifier, password }, callback) => {
         const cleanId = identifier ? identifier.trim() : '';
-        if (!cleanId || !password) return callback({ success: false, msg: 'يرجى إدخال بيانات الدخول' });
+        if (!cleanId || !password) return callback({ success: false, msg: 'يرجى إدخال البيانات' });
 
         let targetUsername = cleanId;
         if (cleanId.includes('@')) {
             for (let [uname, udata] of usersDB.entries()) {
-                if (udata.email === cleanId.toLowerCase()) {
-                    targetUsername = uname;
-                    break;
-                }
+                if (udata.email === cleanId.toLowerCase()) { targetUsername = uname; break; }
             }
         }
 
@@ -125,7 +106,7 @@ io.on('connection', (socket) => {
 
         if (!friendRequests.has(cleanTarget)) friendRequests.set(cleanTarget, []);
         const requestsList = friendRequests.get(cleanTarget);
-        if (requestsList.includes(sender)) return callback({ success: false, msg: 'تم إرسال طلب صداقة مسبقاً!' });
+        if (requestsList.includes(sender)) return callback({ success: false, msg: 'تم إرسال طلب مسبقاً!' });
 
         requestsList.push(sender);
         const targetSocketId = onlineUsers.get(cleanTarget);
@@ -160,6 +141,21 @@ io.on('connection', (socket) => {
     function broadcastOnlineStatus() {
         io.emit('online_users_status', Array.from(onlineUsers.keys()));
     }
+
+    // مؤشر الكتابة (Typing Indicator)
+    socket.on('typing', ({ to, isTyping, isGroup }) => {
+        const sender = socketToUser.get(socket.id);
+        if (!sender) return;
+
+        if (isGroup) {
+            socket.broadcast.emit('display_typing', { from: sender, to, isTyping });
+        } else {
+            const recipientSocketId = onlineUsers.get(to);
+            if (recipientSocketId) {
+                io.to(recipientSocketId).emit('display_typing', { from: sender, to: sender, isTyping });
+            }
+        }
+    });
 
     socket.on('send_message', ({ to, message, file, fileType, isGroup }) => {
         const sender = socketToUser.get(socket.id);
@@ -216,4 +212,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v8.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v9.0 يعمل بنجاح على المنفذ: ${PORT}`));
