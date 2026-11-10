@@ -13,14 +13,14 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// قاعدة بيانات السيرفر للحسابات والدردشات
 const usersDB = new Map(); // username -> { email, passwordHash, avatar, contacts: [] }
 const emailsDB = new Set(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
 const chatHistories = new Map(); // chatKey -> [messages]
 
-const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
+// الصورة الأصلية الافتراضية الزرقاء لـ Nexus Messenger
+const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
 
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -120,7 +120,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // تحديث البروفايل (الاسم والصورة) في حساب السيرفر
     socket.on('update_profile', ({ newAvatar, newUsername }, callback) => {
         const oldUsername = socketToUser.get(socket.id);
         if (!oldUsername) return callback({ success: false, msg: 'غير مسجل دخول!' });
@@ -159,7 +158,6 @@ io.on('connection', (socket) => {
         io.emit('users_avatars_sync', avatarsMap);
     }
 
-    // طلبات الصداقة وإضافتها لحسابات السيرفر
     socket.on('send_friend_request', ({ targetUsername }, callback) => {
         const sender = socketToUser.get(socket.id);
         const cleanTarget = targetUsername.trim();
@@ -214,7 +212,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // جلب سجل الدردشات الخاص بالحساب من السيرفر
     socket.on('get_chat_history', ({ peer }, callback) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return callback([]);
@@ -242,7 +239,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // حفظ الرسائل في ذاكرة السيرفر المرتبطة بالحسابات
     socket.on('send_message', ({ to, message, file, fileType, isGroup }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
@@ -304,4 +300,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v12.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v14.0 يعمل بنجاح على المنفذ: ${PORT}`));
