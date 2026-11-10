@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>-Nexus-messenger VIP Pro</title>
+    <title>Nexus Messenger</title>
 
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
@@ -13,7 +13,7 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="-Nexus-">
+    <meta name="apple-mobile-web-app-title" content="Nexus">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
@@ -43,8 +43,34 @@
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100">
 
+    <!-- شاشة طلب الإشعارات الإجبارية أول الدخول -->
+    <div id="notificationGateModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 mobile-slide-enter">
+        <div class="bg-slate-900 border border-cyan-500/40 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl space-y-4">
+            <div class="w-16 h-16 bg-cyan-500/10 text-cyan-400 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner border border-cyan-500/20">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white">تفعيل إشعارات النظام 🔔</h2>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                لكي تستلم الرسائل والمكالمات في جهازك (آيفون، أندرويد، ويندوز، ماك)، يجب منح الصلاحية لنظام الجهاز أولاً.
+            </p>
+
+            <div class="bg-slate-800/80 p-3 rounded-2xl text-[11px] text-amber-400 font-bold border border-amber-500/20">
+                ⚠️ إذا اخترت (لا) لن تظهر لك أي إشعارات فورية، وستحتاج لفتح التطبيق يدوياً وقراءة الرسائل بنفسك.
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <button type="button" onclick="acceptSystemNotifications()" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check-circle"></i> تفعيل الإشعارات والدخول
+                </button>
+                <button type="button" onclick="declineSystemNotifications()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition">
+                    متابعة بدون إشعارات (وضعية اليدوي)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة تسجيل الدخول -->
-    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 mobile-slide-enter">
+    <div id="authModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-1">-Nexus-</h1>
             <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الموثق مع رمز تحقق مكوّن من 3 أرقام</p>
@@ -77,6 +103,11 @@
         <!-- القائمة الجانبية -->
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300 mobile-slide-enter">
             <div>
+                <div id="noNotificationWarning" class="hidden mb-3 p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-[10px] text-rose-400 font-bold flex items-center justify-between">
+                    <span>⚠️ الإشعارات معطلة! لن تصلك التنبيهات.</span>
+                    <button onclick="acceptSystemNotifications()" class="underline text-cyan-400">تفعيل</button>
+                </div>
+
                 <div class="flex items-center justify-between mb-4 p-2 border-b border-slate-200 dark:border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
                         <h2 class="font-black text-cyan-600 dark:text-cyan-400">الدردشات</h2>
@@ -236,7 +267,7 @@
         </div>
     </div>
 
-    <!-- الإعدادات (مع زر تفعيل الإشعارات بطلب إذن صريح) -->
+    <!-- الإعدادات -->
     <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">إعدادات الحساب ⚙️</h2>
@@ -246,12 +277,11 @@
                     <span id="myEmailDisplay" class="font-bold text-cyan-500">...</span>
                 </div>
                 
-                <!-- زر طلب صلاحية وتفعيل الإشعارات صراحة -->
                 <div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">تفعيل الإشعارات:</span>
-                    <button type="button" onclick="requestNotificationPermission()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
+                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300">إشعارات النظام:</span>
+                    <button type="button" onclick="acceptSystemNotifications()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
                         <i class="fa-solid fa-bell"></i>
-                        <span>السماح</span>
+                        <span id="notifStatusText">إعادة الضبط</span>
                     </button>
                 </div>
 
@@ -263,7 +293,15 @@
                     </button>
                 </div>
             </div>
-            <button type="button" onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-4">تسجيل الخروج</button>
+
+            <!-- شعار وبصمة Nova Studio داخل الإعدادات -->
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-400">
+                <span>بواسطة</span>
+                <span class="font-bold text-cyan-500">Nova Studio</span>
+                <img src="https://cdn.phototourl.com/member/2026-11-10-d21093a7-69ee-4f15-a5cd-7a6dd3901962.png" alt="Nova Studio" class="w-5 h-5 object-contain rounded-full">
+            </div>
+
+            <button type="button" onclick="logout()" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-2">تسجيل الخروج</button>
             <button type="button" onclick="closeSettings()" class="w-full py-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded-xl text-xs">إغلاق</button>
         </div>
     </div>
@@ -275,29 +313,51 @@
         let mediaRecorder, audioChunks = [], isRecording = false;
         let isCodeStep = false;
         let typingTimeout;
+        let systemNotificationAllowed = false;
         
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
         let onlineUsersStatus = [];
 
-        // دالة طلب إذن الإشعارات عند ضغط المستخدم في الإعدادات
-        function requestNotificationPermission() {
+        function acceptSystemNotifications() {
             if (!window.Notification) {
-                alert("متصفحك لا يدعم الإشعارات!");
+                alert("جهازك لا يدعم نظام إشعارات المتصفح!");
+                proceedToAuth();
                 return;
             }
+
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    alert("تم تفعيل الإشعارات بنجاح! ستصلك تنبيهات الرسائل والمكالمات.");
-                    new Notification("Nexus Messenger", { body: "الإشعارات تعمل الآن بنجاح تام! 🚀" });
+                    systemNotificationAllowed = true;
+                    document.getElementById('noNotificationWarning')?.classList.add('hidden');
+                    new Notification("Nexus Messenger", {
+                        body: "تم تفعيل الإشعارات بنجاح على جهازك! 🎉",
+                        icon: "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png"
+                    });
                 } else {
-                    alert("تم رفض إذن الإشعارات. يجدر بك السماح لها من إعدادات المتصفح.");
+                    systemNotificationAllowed = false;
+                    document.getElementById('noNotificationWarning')?.classList.remove('hidden');
                 }
+                proceedToAuth();
             });
         }
 
+        function declineSystemNotifications() {
+            systemNotificationAllowed = false;
+            document.getElementById('noNotificationWarning')?.classList.remove('hidden');
+            proceedToAuth();
+        }
+
+        function proceedToAuth() {
+            document.getElementById('notificationGateModal').classList.add('hidden');
+            const savedUser = localStorage.getItem('nexus_user');
+            if (!savedUser) {
+                document.getElementById('authModal').classList.remove('hidden');
+            }
+        }
+
         function showDesktopNotification(title, body) {
-            if (window.Notification && Notification.permission === "granted") {
+            if (systemNotificationAllowed && window.Notification && Notification.permission === "granted") {
                 new Notification(title, {
                     body: body,
                     icon: "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png"
