@@ -6,8 +6,8 @@
     <title>-Nexus-messenger VIP Pro</title>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png">
-    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png">
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -109,9 +109,8 @@
                             <i class="fa-solid fa-gear text-xs"></i>
                         </button>
                         
-                        <!-- زر الملف الشخصي وصورة البروفايل القابلة للنقر -->
                         <div onclick="openProfileModal()" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير صورتك واسمك">
-                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png" class="w-6 h-6 rounded-full object-cover">
+                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png" class="w-6 h-6 rounded-full object-cover">
                             <span id="myUsername" class="text-xs text-cyan-700 dark:text-cyan-300 font-bold">...</span>
                         </div>
                     </div>
@@ -130,7 +129,7 @@
                     <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
+                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
@@ -333,9 +332,11 @@
         let isCodeStep = false;
         let typingTimeout;
         let systemNotificationAllowed = false;
-        let currentAvatarUrl = "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
-        let globalUsersAvatars = {};
         
+        // الصورة الأصلية الافتراضية الزرقاء لـ Nexus
+        const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
+        let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_AVATAR;
+        let globalUsersAvatars = {};
         let serverContacts = [];
 
         function acceptSystemNotifications() {
@@ -372,7 +373,7 @@
             if (systemNotificationAllowed && window.Notification && Notification.permission === "granted") {
                 new Notification(title, {
                     body: body,
-                    icon: "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png"
+                    icon: DEFAULT_AVATAR
                 });
             }
         }
@@ -418,6 +419,9 @@
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             const savedEmail = localStorage.getItem('nexus_email');
+            
+            document.getElementById('myAvatarImg').src = currentAvatarUrl;
+
             if (savedUser) {
                 socket.emit('auto_login', { username: savedUser }, res => {
                     if (res.success) {
@@ -425,6 +429,7 @@
                         myEmail = res.email || savedEmail || '';
                         if(res.avatar) {
                             currentAvatarUrl = res.avatar;
+                            localStorage.setItem('nexus_avatar', currentAvatarUrl);
                             document.getElementById('myAvatarImg').src = currentAvatarUrl;
                         }
                         serverContacts = res.contacts || [];
@@ -435,8 +440,12 @@
                     } else {
                         localStorage.removeItem('nexus_user');
                         localStorage.removeItem('nexus_email');
+                        localStorage.removeItem('nexus_avatar');
+                        document.getElementById('authModal').classList.remove('hidden');
                     }
                 });
+            } else {
+                document.getElementById('authModal').classList.remove('hidden');
             }
         });
 
@@ -480,10 +489,12 @@
                     myName = res.username;
                     currentAvatarUrl = res.avatar;
                     localStorage.setItem('nexus_user', myName);
+                    localStorage.setItem('nexus_avatar', currentAvatarUrl);
+                    localStorage.setItem('nexus_email', myEmail);
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('myAvatarImg').src = currentAvatarUrl;
                     closeProfileModal();
-                    alert("تم حفظ ملفك الشخصي في السحابة وتحديثه للجميع ✨");
+                    alert("تم حفظ ملفك الشخصي وتحديثه للجميع بنجاح ✨");
                 }
             });
         }
@@ -638,8 +649,7 @@
         }
 
         function fetchFriendRequests() {
-            const badge = document.getElementById('reqBadge');
-            if(badge) badge.classList.remove('hidden');
+            document.getElementById('reqBadge')?.classList.remove('hidden');
         }
 
         socket.on('new_friend_request', data => {
@@ -695,7 +705,7 @@
             serverContacts.forEach(c => {
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
-                const avatarSrc = globalUsersAvatars[c.username] || "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
+                const avatarSrc = globalUsersAvatars[c.username] || DEFAULT_AVATAR;
                 
                 container.innerHTML += `
                     <div onclick="selectContact('${c.username}', '${avatarSrc}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95">
@@ -712,7 +722,6 @@
             });
         }
 
-        // جلب الرسائل من السيرفر عند اختيار الص صديق
         function selectContact(username, avatar, isGroup) {
             currentTarget = username;
             document.getElementById('targetUsername').innerText = username;
@@ -768,6 +777,7 @@
                     myEmail = res.email;
                     if(res.avatar) {
                         currentAvatarUrl = res.avatar;
+                        localStorage.setItem('nexus_avatar', currentAvatarUrl);
                         document.getElementById('myAvatarImg').src = currentAvatarUrl;
                     }
                     serverContacts = res.contacts || [];
@@ -784,6 +794,7 @@
         function logout() {
             localStorage.removeItem('nexus_user');
             localStorage.removeItem('nexus_email');
+            localStorage.removeItem('nexus_avatar');
             location.reload();
         }
 
