@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus Messenger</title>
+    <title>-Nexus-messenger VIP Pro</title>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
-    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png">
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Nexus">
+    <meta name="apple-mobile-web-app-title" content="-Nexus-">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class' };</script>
@@ -35,10 +33,6 @@
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-
-        .filter-smooth { filter: contrast(105%) brightness(108%) saturate(110%); }
-        .filter-warm { filter: sepia(25%) saturate(130%) brightness(102%); }
-        .filter-cyber { filter: hue-rotate(180deg) saturate(140%); }
     </style>
 </head>
 <body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100">
@@ -54,7 +48,7 @@
                 لكي تستلم الرسائل والمكالمات في جهازك، يجب منح الصلاحية لنظام الجهاز أولاً.
             </p>
             <div class="space-y-2 pt-2">
-                <button type="button" onclick="acceptSystemNotifications()" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                <button type="button" onclick="acceptSystemNotifications()" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
                     <i class="fa-solid fa-check-circle"></i> تفعيل الإشعارات والدخول
                 </button>
                 <button type="button" onclick="declineSystemNotifications()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition">
@@ -99,7 +93,7 @@
         <div id="sidebarPanel" class="w-full md:w-80 bg-slate-50 dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 absolute md:relative inset-0 z-20 md:z-auto transition-all duration-300 mobile-slide-enter">
             <div>
                 <div id="noNotificationWarning" class="hidden mb-3 p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-[10px] text-rose-400 font-bold flex items-center justify-between">
-                    <span>⚠️ الإشعارات معطلة! لن تصلك التنبيهات.</span>
+                    <span>⚠️ الإشعارات معطلة!</span>
                     <button onclick="acceptSystemNotifications()" class="underline text-cyan-400">تفعيل</button>
                 </div>
 
@@ -115,9 +109,9 @@
                             <i class="fa-solid fa-gear text-xs"></i>
                         </button>
                         
-                        <!-- زر الملف الشخصي وصورة الفيسبوك الافتراضية القابلة للنقر -->
-                        <div onclick="openProfileModal()" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير الصورة والاسم">
-                            <img id="myAvatarImg" src="https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F..." class="w-6 h-6 rounded-full object-cover">
+                        <!-- زر الملف الشخصي وصورة البروفايل القابلة للنقر -->
+                        <div onclick="openProfileModal()" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير صورتك واسمك">
+                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png" class="w-6 h-6 rounded-full object-cover">
                             <span id="myUsername" class="text-xs text-cyan-700 dark:text-cyan-300 font-bold">...</span>
                         </div>
                     </div>
@@ -136,12 +130,11 @@
                     <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <!-- صورة صديقك الحالي -->
-                    <img id="targetAvatarImg" src="https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F..." class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
+                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
-                            <p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومشفرة</p>
+                            <p id="targetStatus" class="text-[10px] text-slate-500">محفوظ في حسابك السحابي</p>
                         </div>
                     </div>
                 </div>
@@ -230,7 +223,7 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل البروفايل (تغيير الصورة والاسم) -->
+    <!-- نافذة تعديل البروفايل -->
     <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
             <h2 class="text-xl font-black text-slate-900 dark:text-white">تعديل الملف الشخصي 👤</h2>
@@ -307,7 +300,7 @@
                     <span class="text-sm font-bold text-slate-700 dark:text-slate-300">إشعارات النظام:</span>
                     <button type="button" onclick="acceptSystemNotifications()" class="px-4 py-2 bg-cyan-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-2 shadow">
                         <i class="fa-solid fa-bell"></i>
-                        <span id="notifStatusText">إعادة الضبط</span>
+                        <span>إعادة الضبط</span>
                     </button>
                 </div>
 
@@ -340,12 +333,10 @@
         let isCodeStep = false;
         let typingTimeout;
         let systemNotificationAllowed = false;
-        let currentAvatarUrl = "https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...";
+        let currentAvatarUrl = "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
         let globalUsersAvatars = {};
         
-        let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
-        let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
-        let onlineUsersStatus = [];
+        let serverContacts = [];
 
         function acceptSystemNotifications() {
             if (!window.Notification) {
@@ -381,7 +372,7 @@
             if (systemNotificationAllowed && window.Notification && Notification.permission === "granted") {
                 new Notification(title, {
                     body: body,
-                    icon: "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png"
+                    icon: "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png"
                 });
             }
         }
@@ -427,11 +418,6 @@
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             const savedEmail = localStorage.getItem('nexus_email');
-            const savedAvatar = localStorage.getItem('nexus_avatar');
-            if (savedAvatar) {
-                currentAvatarUrl = savedAvatar;
-                document.getElementById('myAvatarImg').src = currentAvatarUrl;
-            }
             if (savedUser) {
                 socket.emit('auto_login', { username: savedUser }, res => {
                     if (res.success) {
@@ -441,11 +427,11 @@
                             currentAvatarUrl = res.avatar;
                             document.getElementById('myAvatarImg').src = currentAvatarUrl;
                         }
+                        serverContacts = res.contacts || [];
                         document.getElementById('myUsername').innerText = myName;
                         document.getElementById('myEmailDisplay').innerText = myEmail;
                         document.getElementById('authModal').classList.add('hidden');
                         renderContactsList();
-                        fetchFriendRequests();
                     } else {
                         localStorage.removeItem('nexus_user');
                         localStorage.removeItem('nexus_email');
@@ -454,7 +440,6 @@
             }
         });
 
-        // مزامنة صور وفرازات كل المستخدمين للجميع
         socket.on('users_avatars_sync', avatarsMap => {
             globalUsersAvatars = avatarsMap;
             renderContactsList();
@@ -495,11 +480,10 @@
                     myName = res.username;
                     currentAvatarUrl = res.avatar;
                     localStorage.setItem('nexus_user', myName);
-                    localStorage.setItem('nexus_avatar', currentAvatarUrl);
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('myAvatarImg').src = currentAvatarUrl;
                     closeProfileModal();
-                    alert("تم حفظ وتحديث ملفك الشخصي بنجاح! وتحديث صورتك للجميع ✨");
+                    alert("تم حفظ ملفك الشخصي في السحابة وتحديثه للجميع ✨");
                 }
             });
         }
@@ -528,7 +512,7 @@
                     showAuthError("يرجى إدخال الرمز المكون من 3 أرقام بدقة!");
                     return;
                 }
-                socket.emit('register_with_code', { email, username: u, password: p, code: codeInput, avatar: currentAvatarUrl }, res => {
+                socket.emit('register_with_code', { email, username: u, password: p, code: codeInput }, res => {
                     if (!res.success) {
                         showAuthError(res.msg);
                     } else {
@@ -544,7 +528,7 @@
 
         function handleTypingInput() {
             if (!currentTarget) return;
-            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+            const currentObj = serverContacts.find(c => c.username === currentTarget);
             socket.emit('typing', { to: currentTarget, isTyping: true, isGroup: currentObj?.isGroup });
             
             clearTimeout(typingTimeout);
@@ -570,7 +554,7 @@
         async function toggleVoiceRecording() {
             const btn = document.getElementById('voiceRecordBtn');
             const icon = document.getElementById('voiceIcon');
-            if (!currentTarget) return alert("اختر صديقاً أولاً لترسل له الملاحظة الصوتية!");
+            if (!currentTarget) return alert("اختر صديقاً أولاً!");
 
             if (!isRecording) {
                 try {
@@ -584,7 +568,7 @@
                         const reader = new FileReader();
                         reader.readAsDataURL(audioBlob);
                         reader.onloadend = () => {
-                            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+                            const currentObj = serverContacts.find(c => c.username === currentTarget);
                             socket.emit('send_message', { 
                                 to: currentTarget, 
                                 message: '', 
@@ -600,9 +584,7 @@
                     isRecording = true;
                     btn.classList.add('bg-rose-600', 'text-white', 'animate-pulse');
                     icon.className = "fa-solid fa-square text-lg";
-                } catch (err) {
-                    alert("تعذر الوصول للمايكروفون!");
-                }
+                } catch (err) { alert("تعذر الوصول للمايكروفون!"); }
             } else {
                 mediaRecorder.stop();
                 isRecording = false;
@@ -612,14 +594,12 @@
         }
 
         function openPlusMenu() { 
-            const modal = document.getElementById('plusModal');
-            if(modal) modal.classList.remove('hidden');
+            document.getElementById('plusModal').classList.remove('hidden');
             fetchFriendRequests();
         }
 
         function closePlusMenu() { 
-            const modal = document.getElementById('plusModal');
-            if(modal) modal.classList.add('hidden');
+            document.getElementById('plusModal').classList.add('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
             document.getElementById('friendRequestsSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
@@ -635,7 +615,6 @@
             document.getElementById('friendRequestsSection').classList.remove('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
-            fetchFriendRequests();
         }
 
         function openCreateGroupSection() {
@@ -659,61 +638,28 @@
         }
 
         function fetchFriendRequests() {
-            socket.emit('get_friend_requests', requests => {
-                const listContainer = document.getElementById('friendRequestsList');
-                const badge = document.getElementById('reqBadge');
-                if(!listContainer || !badge) return;
-                listContainer.innerHTML = '';
-
-                if (requests && requests.length > 0) {
-                    badge.classList.remove('hidden');
-                    requests.forEach(req => {
-                        const avatarSrc = globalUsersAvatars[req.username] || req.avatar;
-                        listContainer.innerHTML += `
-                            <div class="flex items-center justify-between bg-slate-800 p-2.5 rounded-xl">
-                                <div class="flex items-center gap-2">
-                                    <img src="${avatarSrc}" class="w-7 h-7 rounded-full object-cover">
-                                    <span class="text-xs font-bold text-white">${req.username}</span>
-                                </div>
-                                <div class="flex gap-1">
-                                    <button type="button" onclick="respondReq('${req.username}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[10px]">قبول</button>
-                                    <button type="button" onclick="respondReq('${req.username}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold rounded-lg text-[10px]">رفض</button>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    badge.classList.add('hidden');
-                    listContainer.innerHTML = '<p class="text-[10px] text-slate-400 text-center">لا توجد طلبات صداقة حالياً</p>';
-                }
-            });
+            const badge = document.getElementById('reqBadge');
+            if(badge) badge.classList.remove('hidden');
         }
 
         socket.on('new_friend_request', data => {
-            const badge = document.getElementById('reqBadge');
-            if(badge) badge.classList.remove('hidden');
+            document.getElementById('reqBadge')?.classList.remove('hidden');
             showDesktopNotification("طلب صداقة جديد!", `أرسل ${data.from} طلب صداقة إليك.`);
         });
 
         socket.on('friend_request_accepted', data => {
-            if (!mySavedContacts.some(c => c.username === data.by)) {
-                mySavedContacts.push({ username: data.by, isGroup: false });
-                localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
-                renderContactsList();
-                showDesktopNotification("تم قبول الصداقة!", `قبل ${data.by} طلبك وأصبحتم أصدقاء.`);
-            }
+            serverContacts = data.contacts;
+            renderContactsList();
+            showDesktopNotification("تم قبول الصداقة!", `قبل ${data.by} طلبك وأصبحتم أصدقاء.`);
         });
 
         function respondReq(fromUser, accept) {
             socket.emit('respond_friend_request', { fromUser, accept }, res => {
                 if (accept && res.success) {
-                    if (!mySavedContacts.some(c => c.username === res.friend.username)) {
-                        mySavedContacts.push({ username: res.friend.username, isGroup: false });
-                        localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
-                        renderContactsList();
-                    }
+                    serverContacts = res.contacts;
+                    renderContactsList();
                 }
-                fetchFriendRequests();
+                closePlusMenu();
             });
         }
 
@@ -722,11 +668,14 @@
             if(!input) return;
             const name = input.value.trim();
             if (name) {
-                mySavedContacts.push({ username: name, isGroup: true });
-                localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
-                renderContactsList();
-                closePlusMenu();
-                input.value = '';
+                socket.emit('add_group', { groupName: name }, res => {
+                    if(res.success) {
+                        serverContacts = res.contacts;
+                        renderContactsList();
+                        closePlusMenu();
+                        input.value = '';
+                    }
+                });
             }
         }
 
@@ -739,14 +688,14 @@
             const container = document.getElementById('myContactsList');
             if(!container) return;
             container.innerHTML = '';
-            if (mySavedContacts.length === 0) {
+            if (serverContacts.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 text-center pt-10">لا يوجد أصدقاء بعد.<br>اضغط على زر (+) لإرسال طلبات صداقة!</p>';
                 return;
             }
-            mySavedContacts.forEach(c => {
+            serverContacts.forEach(c => {
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
-                const avatarSrc = globalUsersAvatars[c.username] || "https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...";
+                const avatarSrc = globalUsersAvatars[c.username] || "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
                 
                 container.innerHTML += `
                     <div onclick="selectContact('${c.username}', '${avatarSrc}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95">
@@ -763,15 +712,20 @@
             });
         }
 
+        // جلب الرسائل من السيرفر عند اختيار الص صديق
         function selectContact(username, avatar, isGroup) {
             currentTarget = username;
             document.getElementById('targetUsername').innerText = username;
             document.getElementById('targetAvatarImg').src = avatar;
             document.getElementById('headerStatusArea').innerHTML = `<p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومشفرة</p>`;
-            if (isGroup) document.getElementById('callButtons').classList.add('hidden');
-            else document.getElementById('callButtons').classList.remove('hidden');
+            if (isGroup) {
+                document.getElementById('callButtons').classList.add('hidden');
+                socket.emit('get_group_history', { groupName: username }, history => { renderServerMessages(history); });
+            } else {
+                document.getElementById('callButtons').classList.remove('hidden');
+                socket.emit('get_chat_history', { peer: username }, history => { renderServerMessages(history); });
+            }
             if (window.innerWidth < 768) document.getElementById('sidebarPanel').classList.add('hidden');
-            renderMessages();
         }
 
         function showSidebar() { document.getElementById('sidebarPanel').classList.remove('hidden'); }
@@ -815,15 +769,14 @@
                     if(res.avatar) {
                         currentAvatarUrl = res.avatar;
                         document.getElementById('myAvatarImg').src = currentAvatarUrl;
-                        localStorage.setItem('nexus_avatar', currentAvatarUrl);
                     }
+                    serverContacts = res.contacts || [];
                     localStorage.setItem('nexus_user', myName);
                     localStorage.setItem('nexus_email', myEmail);
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('myEmailDisplay').innerText = myEmail;
                     document.getElementById('authModal').classList.add('hidden');
                     renderContactsList();
-                    fetchFriendRequests();
                 }
             });
         }
@@ -831,7 +784,6 @@
         function logout() {
             localStorage.removeItem('nexus_user');
             localStorage.removeItem('nexus_email');
-            localStorage.removeItem('nexus_avatar');
             location.reload();
         }
 
@@ -856,7 +808,7 @@
 
         function sendGif(url) {
             if (!currentTarget) return;
-            const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+            const currentObj = serverContacts.find(c => c.username === currentTarget);
             socket.emit('send_message', { to: currentTarget, message: '', file: url, fileType: 'gif', isGroup: currentObj?.isGroup });
             document.getElementById('gifPicker').classList.add('hidden');
         }
@@ -865,7 +817,7 @@
             e.preventDefault();
             const input = document.getElementById('msgInput');
             if (input.value.trim() && currentTarget) {
-                const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+                const currentObj = serverContacts.find(c => c.username === currentTarget);
                 socket.emit('send_message', { to: currentTarget, message: input.value.trim(), isGroup: currentObj?.isGroup });
                 input.value = '';
             }
@@ -877,7 +829,7 @@
             const isVideo = file.type.startsWith('video/');
             const reader = new FileReader();
             reader.onload = function(e) {
-                const currentObj = mySavedContacts.find(c => c.username === currentTarget);
+                const currentObj = serverContacts.find(c => c.username === currentTarget);
                 socket.emit('send_message', { to: currentTarget, message: '', file: e.target.result, fileType: isVideo ? 'video' : 'image', isGroup: currentObj?.isGroup });
             };
             reader.readAsDataURL(file);
@@ -886,61 +838,59 @@
 
         socket.on('receive_message', data => {
             const partner = data.from === myName ? data.to : data.from;
-            if (!chatStore[partner]) chatStore[partner] = [];
-            chatStore[partner].push(data);
-            localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
-            
             if (partner === currentTarget) {
-                renderMessages();
+                appendSingleMessage(data);
             } else if (data.from !== myName) {
                 showDesktopNotification(`رسالة جديدة من ${data.from}`, data.message || "ملف مرئي/صوتي");
             }
         });
 
         socket.on('receive_group_message', data => {
-            const groupName = data.to;
-            if (!chatStore[groupName]) chatStore[groupName] = [];
-            chatStore[groupName].push(data);
-            localStorage.setItem('nexus_chats', JSON.stringify(chatStore));
-            
-            if (groupName === currentTarget) {
-                renderMessages();
+            if (data.to === currentTarget) {
+                appendSingleMessage(data);
             } else if (data.from !== myName) {
-                showDesktopNotification(`[${groupName}] ${data.from}`, data.message || "ملف مرئي/صوتي");
+                showDesktopNotification(`[${data.to}] ${data.from}`, data.message || "ملف مرئي/صوتي");
             }
         });
 
-        function renderMessages() {
+        function renderServerMessages(history) {
             const box = document.getElementById('messagesBox');
             if(!box) return;
             box.innerHTML = '';
-            const list = chatStore[currentTarget] || [];
-            list.forEach(m => {
-                const isMe = m.from === myName;
-                let content = '';
+            if(!history || history.length === 0) {
+                box.innerHTML = '<div class="text-center text-xs text-slate-400 pt-20">لا توجد رسائل سابقة. ابدأ المحادثة الآن! ⚡</div>';
+                return;
+            }
+            history.forEach(m => appendSingleMessage(m));
+        }
 
-                if (m.file) {
-                    if (m.fileType === 'video') {
-                        content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
-                    } else if (m.fileType === 'audio') {
-                        content = `<audio src="${m.file}" controls class="w-full max-w-xs"></audio>`;
-                    } else {
-                        content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow" onclick="window.open('${m.file}')"/>`;
-                    }
+        function appendSingleMessage(m) {
+            const box = document.getElementById('messagesBox');
+            if(!box) return;
+            const isMe = m.from === myName;
+            let content = '';
+
+            if (m.file) {
+                if (m.fileType === 'video') {
+                    content = `<video src="${m.file}" controls class="rounded-xl max-w-full max-h-64"></video>`;
+                } else if (m.fileType === 'audio') {
+                    content = `<audio src="${m.file}" controls class="w-full max-w-xs"></audio>`;
                 } else {
-                    content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
+                    content = `<img src="${m.file}" class="rounded-xl max-w-full max-h-60 object-cover shadow" onclick="window.open('${m.file}')"/>`;
                 }
+            } else {
+                content = `<p class="text-sm leading-relaxed">${m.message}</p>`;
+            }
 
-                box.innerHTML += `
-                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                        <div class="max-w-[80%] sm:max-w-[70%] p-3 rounded-2xl ${isMe ? 'bg-cyan-500 text-slate-950 font-semibold rounded-br-none shadow' : 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-bl-none border border-slate-300 dark:border-slate-700/50'}">
-                            ${!isMe ? `<span class="text-[10px] text-cyan-600 dark:text-cyan-400 block font-bold mb-1">${m.from}</span>` : ''}
-                            ${content}
-                            <span class="text-[10px] opacity-60 block text-left mt-1">${m.timestamp}</span>
-                        </div>
+            box.innerHTML += `
+                <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-[80%] sm:max-w-[70%] p-3 rounded-2xl ${isMe ? 'bg-cyan-500 text-slate-950 font-semibold rounded-br-none shadow' : 'bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-200 rounded-bl-none border border-slate-300 dark:border-slate-700/50'}">
+                        ${!isMe ? `<span class="text-[10px] text-cyan-600 dark:text-cyan-400 block font-bold mb-1">${m.from}</span>` : ''}
+                        ${content}
+                        <span class="text-[10px] opacity-60 block text-left mt-1">${m.timestamp}</span>
                     </div>
-                `;
-            });
+                </div>
+            `;
             box.scrollTop = box.scrollHeight;
         }
 
