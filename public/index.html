@@ -133,7 +133,7 @@
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
-                            <p id="targetStatus" class="text-[10px] text-slate-500">محفوظ في حسابك السحابي</p>
+                            <p id="targetStatus" class="text-[10px] text-slate-500">محفوظ بشكل دائم على السيرفر</p>
                         </div>
                     </div>
                 </div>
@@ -415,7 +415,6 @@
             if(vid) vid.className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
         }
 
-        // عند الاتصال بالسيرفر، التحقق المباشر من الحساب المخزن محلياً لمنع الخروج
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             const savedEmail = localStorage.getItem('nexus_email');
