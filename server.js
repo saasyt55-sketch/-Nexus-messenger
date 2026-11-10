@@ -13,16 +13,22 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); // username -> { email, passwordHash, avatar }
+// قاعدة بيانات السيرفر للحسابات والدردشات
+const usersDB = new Map(); // username -> { email, passwordHash, avatar, contacts: [] }
 const emailsDB = new Set(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
-const friendRequests = new Map(); 
-const tempVerifyCodes = new Map(); 
+const chatHistories = new Map(); // chatKey -> [messages]
+
+const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-9a49aa50-c2fc-43ff-8916-3f5e58d70de9.png";
 
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+}
+
+function getChatKey(user1, user2) {
+    return [user1, user2].sort().join('___');
 }
 
 io.on('connection', (socket) => {
@@ -37,27 +43,28 @@ io.on('connection', (socket) => {
         if (usersDB.has(cleanName)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
 
         const randomCode = Math.floor(100 + Math.random() * 900).toString();
-        tempVerifyCodes.set(cleanEmail, randomCode);
+        socket.tempCode = randomCode;
+        socket.tempEmail = cleanEmail;
 
         callback({ success: true, msg: `تم تجهيز رمز التحقق: [ ${randomCode} ]` });
     });
 
-    socket.on('register_with_code', async ({ email, username, password, code, avatar }, callback) => {
+    socket.on('register_with_code', async ({ email, username, password, code }, callback) => {
         const cleanEmail = email ? email.trim().toLowerCase() : '';
         const cleanName = username ? username.trim() : '';
-        const savedCode = tempVerifyCodes.get(cleanEmail);
 
-        if (!savedCode || savedCode !== code.trim()) {
+        if (!socket.tempCode || socket.tempCode !== code.trim()) {
             return callback({ success: false, msg: 'رمز التحقق غير صحيح!' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const defaultAvatar = avatar || 'https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...'; // رابط افتراضي للفيسبوك
-        
-        usersDB.set(cleanName, { email: cleanEmail, passwordHash: hashedPassword, avatar: 'https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png' });
+        usersDB.set(cleanName, { 
+            email: cleanEmail, 
+            passwordHash: hashedPassword, 
+            avatar: DEFAULT_AVATAR,
+            contacts: [] 
+        });
         emailsDB.add(cleanEmail);
-        friendRequests.set(cleanName, []);
-        tempVerifyCodes.delete(cleanEmail);
 
         callback({ success: true, msg: 'تم توثيق بريدك وإنشاء الحساب بنجاح! 🎉' });
     });
@@ -82,7 +89,13 @@ io.on('connection', (socket) => {
         onlineUsers.set(targetUsername, socket.id);
         socketToUser.set(socket.id, targetUsername);
 
-        callback({ success: true, username: targetUsername, avatar: user.avatar, email: user.email });
+        callback({ 
+            success: true, 
+            username: targetUsername, 
+            avatar: user.avatar, 
+            email: user.email,
+            contacts: user.contacts 
+        });
         broadcastOnlineStatus();
         broadcastAllUsersAvatars();
     });
@@ -93,7 +106,13 @@ io.on('connection', (socket) => {
         if (user) {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
-            callback({ success: true, username: cleanName, avatar: user.avatar, email: user.email });
+            callback({ 
+                success: true, 
+                username: cleanName, 
+                avatar: user.avatar, 
+                email: user.email,
+                contacts: user.contacts 
+            });
             broadcastOnlineStatus();
             broadcastAllUsersAvatars();
         } else {
@@ -101,7 +120,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // تحديث الصورة والاسم الشخصي
+    // تحديث البروفايل (الاسم والصورة) في حساب السيرفر
     socket.on('update_profile', ({ newAvatar, newUsername }, callback) => {
         const oldUsername = socketToUser.get(socket.id);
         if (!oldUsername) return callback({ success: false, msg: 'غير مسجل دخول!' });
@@ -115,16 +134,12 @@ io.on('connection', (socket) => {
             finalUsername = newUsername.trim();
             if (usersDB.has(finalUsername)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
             
-            // نقل بيانات الحساب لليوزر الجديد
             usersDB.set(finalUsername, userData);
             usersDB.delete(oldUsername);
             
             onlineUsers.delete(oldUsername);
             onlineUsers.set(finalUsername, socket.id);
             socketToUser.set(socket.id, finalUsername);
-            
-            friendRequests.set(finalUsername, friendRequests.get(oldUsername) || []);
-            friendRequests.delete(oldUsername);
         }
 
         if (newAvatar) {
@@ -144,6 +159,7 @@ io.on('connection', (socket) => {
         io.emit('users_avatars_sync', avatarsMap);
     }
 
+    // طلبات الصداقة وإضافتها لحسابات السيرفر
     socket.on('send_friend_request', ({ targetUsername }, callback) => {
         const sender = socketToUser.get(socket.id);
         const cleanTarget = targetUsername.trim();
@@ -151,43 +167,66 @@ io.on('connection', (socket) => {
         if (!usersDB.has(cleanTarget)) return callback({ success: false, msg: 'المستخدم غير موجود!' });
         if (cleanTarget === sender) return callback({ success: false, msg: 'لا يمكنك إضافة نفسك!' });
 
-        if (!friendRequests.has(cleanTarget)) friendRequests.set(cleanTarget, []);
-        const requestsList = friendRequests.get(cleanTarget);
-        if (requestsList.includes(sender)) return callback({ success: false, msg: 'تم إرسال طلب مسبقاً!' });
+        const targetUser = usersDB.get(cleanTarget);
+        if (targetUser.contacts.some(c => c.username === sender)) {
+            return callback({ success: false, msg: 'أنتما أصدقاء بالفعل!' });
+        }
 
-        requestsList.push(sender);
         const targetSocketId = onlineUsers.get(cleanTarget);
         if (targetSocketId) io.to(targetSocketId).emit('new_friend_request', { from: sender });
 
         callback({ success: true, msg: 'تم إرسال طلب الصداقة بنجاح! ⏳' });
     });
 
-    socket.on('get_friend_requests', (callback) => {
-        const username = socketToUser.get(socket.id);
-        if (!username) return callback([]);
-        const requests = friendRequests.get(username) || [];
-        callback(requests.map(reqName => ({ username: reqName, avatar: usersDB.get(reqName)?.avatar || 'https://www.facebook.com/photo/?fbid=1017618267032974&set=a.100287335432743' })));
-    });
-
     socket.on('respond_friend_request', ({ fromUser, accept }, callback) => {
         const username = socketToUser.get(socket.id);
         if (!username) return;
 
-        let requests = friendRequests.get(username) || [];
-        friendRequests.set(username, requests.filter(r => r !== fromUser));
-
         if (accept) {
-            callback({ success: true, friend: { username: fromUser, avatar: usersDB.get(fromUser)?.avatar || 'https://www.facebook.com/photo/?fbid=1017618267032974&set=a.100287335432743' } });
+            const myUser = usersDB.get(username);
+            const friendUser = usersDB.get(fromUser);
+
+            if (myUser && !myUser.contacts.some(c => c.username === fromUser)) {
+                myUser.contacts.push({ username: fromUser, isGroup: false });
+            }
+            if (friendUser && !friendUser.contacts.some(c => c.username === username)) {
+                friendUser.contacts.push({ username: username, isGroup: false });
+            }
+
+            callback({ success: true, contacts: myUser.contacts });
+
             const senderSocket = onlineUsers.get(fromUser);
-            if (senderSocket) io.to(senderSocket).emit('friend_request_accepted', { by: username, avatar: usersDB.get(username)?.avatar });
+            if (senderSocket) {
+                io.to(senderSocket).emit('friend_request_accepted', { by: username, contacts: friendUser.contacts });
+            }
         } else {
             callback({ success: false });
         }
     });
 
-    function broadcastOnlineStatus() {
-        io.emit('online_users_status', Array.from(onlineUsers.keys()));
-    }
+    socket.on('add_group', ({ groupName }, callback) => {
+        const username = socketToUser.get(socket.id);
+        if (!username) return;
+        const user = usersDB.get(username);
+        if (user && !user.contacts.some(c => c.username === groupName)) {
+            user.contacts.push({ username: groupName, isGroup: true });
+            callback({ success: true, contacts: user.contacts });
+        }
+    });
+
+    // جلب سجل الدردشات الخاص بالحساب من السيرفر
+    socket.on('get_chat_history', ({ peer }, callback) => {
+        const sender = socketToUser.get(socket.id);
+        if (!sender) return callback([]);
+        const chatKey = getChatKey(sender, peer);
+        const history = chatHistories.get(chatKey) || [];
+        callback(history);
+    });
+
+    socket.on('get_group_history', ({ groupName }, callback) => {
+        const history = chatHistories.get(groupName) || [];
+        callback(history);
+    });
 
     socket.on('typing', ({ to, isTyping, isGroup }) => {
         const sender = socketToUser.get(socket.id);
@@ -203,6 +242,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // حفظ الرسائل في ذاكرة السيرفر المرتبطة بالحسابات
     socket.on('send_message', ({ to, message, file, fileType, isGroup }) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return;
@@ -218,8 +258,14 @@ io.on('connection', (socket) => {
         };
 
         if (isGroup) {
+            if (!chatHistories.has(to)) chatHistories.set(to, []);
+            chatHistories.get(to).push(payload);
             io.emit('receive_group_message', payload);
         } else {
+            const chatKey = getChatKey(sender, to);
+            if (!chatHistories.has(chatKey)) chatHistories.set(chatKey, []);
+            chatHistories.get(chatKey).push(payload);
+
             const recipientSocketId = onlineUsers.get(to);
             if (recipientSocketId) io.to(recipientSocketId).emit('receive_message', payload);
             socket.emit('receive_message', payload);
@@ -258,4 +304,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v11.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v12.0 يعمل بنجاح على المنفذ: ${PORT}`));
