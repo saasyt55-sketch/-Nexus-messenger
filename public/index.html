@@ -51,19 +51,14 @@
             </div>
             <h2 class="text-2xl font-black text-white">تفعيل إشعارات النظام 🔔</h2>
             <p class="text-xs text-slate-300 leading-relaxed">
-                لكي تستلم الرسائل والمكالمات في جهازك (آيفون، أندرويد، ويندوز، ماك)، يجب منح الصلاحية لنظام الجهاز أولاً.
+                لكي تستلم الرسائل والمكالمات في جهازك، يجب منح الصلاحية لنظام الجهاز أولاً.
             </p>
-
-            <div class="bg-slate-800/80 p-3 rounded-2xl text-[11px] text-amber-400 font-bold border border-amber-500/20">
-                ⚠️ إذا اخترت (لا) لن تظهر لك أي إشعارات فورية، وستحتاج لفتح التطبيق يدوياً وقراءة الرسائل بنفسك.
-            </div>
-
             <div class="space-y-2 pt-2">
                 <button type="button" onclick="acceptSystemNotifications()" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 active:scale-95 text-slate-950 font-black rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
                     <i class="fa-solid fa-check-circle"></i> تفعيل الإشعارات والدخول
                 </button>
                 <button type="button" onclick="declineSystemNotifications()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition">
-                    متابعة بدون إشعارات (وضعية اليدوي)
+                    متابعة بدون إشعارات
                 </button>
             </div>
         </div>
@@ -119,7 +114,12 @@
                         <button type="button" onclick="openSettings()" title="الإعدادات" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition">
                             <i class="fa-solid fa-gear text-xs"></i>
                         </button>
-                        <span id="myUsername" class="text-xs bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 px-3 py-1 rounded-full font-bold">...</span>
+                        
+                        <!-- زر الملف الشخصي وصورة الفيسبوك الافتراضية القابلة للنقر -->
+                        <div onclick="openProfileModal()" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير الصورة والاسم">
+                            <img id="myAvatarImg" src="https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F..." class="w-6 h-6 rounded-full object-cover">
+                            <span id="myUsername" class="text-xs text-cyan-700 dark:text-cyan-300 font-bold">...</span>
+                        </div>
                     </div>
                 </div>
 
@@ -136,7 +136,8 @@
                     <button type="button" onclick="showSidebar()" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <div id="targetAvatar" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-lg">💬</div>
+                    <!-- صورة صديقك الحالي -->
+                    <img id="targetAvatarImg" src="https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F..." class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
@@ -229,6 +230,31 @@
         </div>
     </div>
 
+    <!-- نافذة تعديل البروفايل (تغيير الصورة والاسم) -->
+    <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
+            <h2 class="text-xl font-black text-slate-900 dark:text-white">تعديل الملف الشخصي 👤</h2>
+            
+            <div class="flex flex-col items-center gap-3">
+                <img id="profileModalAvatar" src="" class="w-20 h-20 rounded-full object-cover border-2 border-cyan-500 shadow-lg">
+                <label class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-cyan-600 dark:text-cyan-400 font-bold rounded-xl text-xs cursor-pointer transition shadow">
+                    اختر صورة جديدة
+                    <input type="file" accept="image/*" class="hidden" onchange="previewNewAvatar(event)">
+                </label>
+            </div>
+
+            <div class="space-y-1 text-right">
+                <label class="text-xs text-slate-400 font-bold">اسم المستخدم:</label>
+                <input type="text" id="profileNewUsername" class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button type="button" onclick="saveProfileChanges()" class="flex-1 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-xs transition shadow">حفظ التغييرات</button>
+                <button type="button" onclick="closeProfileModal()" class="py-2.5 px-4 bg-slate-200 dark:bg-slate-800 text-slate-500 rounded-xl text-xs font-bold">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة زر (+) وزر طلبات الصداقة -->
     <div id="plusModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl space-y-4">
@@ -294,7 +320,7 @@
                 </div>
             </div>
 
-            <!-- شعار وبصمة Nova Studio داخل الإعدادات -->
+            <!-- شعار Nova Studio -->
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-400">
                 <span>بواسطة</span>
                 <span class="font-bold text-cyan-500">Nova Studio</span>
@@ -314,6 +340,8 @@
         let isCodeStep = false;
         let typingTimeout;
         let systemNotificationAllowed = false;
+        let currentAvatarUrl = "https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...";
+        let globalUsersAvatars = {};
         
         let mySavedContacts = JSON.parse(localStorage.getItem('nexus_contacts') || '[]');
         let chatStore = JSON.parse(localStorage.getItem('nexus_chats') || '{}');
@@ -330,13 +358,6 @@
                 if (permission === "granted") {
                     systemNotificationAllowed = true;
                     document.getElementById('noNotificationWarning')?.classList.add('hidden');
-                    new Notification("Nexus Messenger", {
-                        body: "تم تفعيل الإشعارات بنجاح على جهازك! 🎉",
-                        icon: "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png"
-                    });
-                } else {
-                    systemNotificationAllowed = false;
-                    document.getElementById('noNotificationWarning')?.classList.remove('hidden');
                 }
                 proceedToAuth();
             });
@@ -406,11 +427,20 @@
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             const savedEmail = localStorage.getItem('nexus_email');
+            const savedAvatar = localStorage.getItem('nexus_avatar');
+            if (savedAvatar) {
+                currentAvatarUrl = savedAvatar;
+                document.getElementById('myAvatarImg').src = currentAvatarUrl;
+            }
             if (savedUser) {
                 socket.emit('auto_login', { username: savedUser }, res => {
                     if (res.success) {
                         myName = res.username;
                         myEmail = res.email || savedEmail || '';
+                        if(res.avatar) {
+                            currentAvatarUrl = res.avatar;
+                            document.getElementById('myAvatarImg').src = currentAvatarUrl;
+                        }
                         document.getElementById('myUsername').innerText = myName;
                         document.getElementById('myEmailDisplay').innerText = myEmail;
                         document.getElementById('authModal').classList.add('hidden');
@@ -423,6 +453,56 @@
                 });
             }
         });
+
+        // مزامنة صور وفرازات كل المستخدمين للجميع
+        socket.on('users_avatars_sync', avatarsMap => {
+            globalUsersAvatars = avatarsMap;
+            renderContactsList();
+            if (currentTarget && globalUsersAvatars[currentTarget]) {
+                document.getElementById('targetAvatarImg').src = globalUsersAvatars[currentTarget];
+            }
+        });
+
+        function openProfileModal() {
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.getElementById('profileModalAvatar').src = currentAvatarUrl;
+            document.getElementById('profileNewUsername').value = myName;
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function previewNewAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAvatarUrl = e.target.result;
+                document.getElementById('profileModalAvatar').src = currentAvatarUrl;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveProfileChanges() {
+            const newName = document.getElementById('profileNewUsername').value.trim();
+            if (!newName) return alert("يرجى كتابة اسم صحيح!");
+
+            socket.emit('update_profile', { newAvatar: currentAvatarUrl, newUsername: newName }, res => {
+                if (!res.success) {
+                    alert(res.msg);
+                } else {
+                    myName = res.username;
+                    currentAvatarUrl = res.avatar;
+                    localStorage.setItem('nexus_user', myName);
+                    localStorage.setItem('nexus_avatar', currentAvatarUrl);
+                    document.getElementById('myUsername').innerText = myName;
+                    document.getElementById('myAvatarImg').src = currentAvatarUrl;
+                    closeProfileModal();
+                    alert("تم حفظ وتحديث ملفك الشخصي بنجاح! وتحديث صورتك للجميع ✨");
+                }
+            });
+        }
 
         function handleRegisterProcess() {
             const email = document.getElementById('authEmail').value;
@@ -448,7 +528,7 @@
                     showAuthError("يرجى إدخال الرمز المكون من 3 أرقام بدقة!");
                     return;
                 }
-                socket.emit('register_with_code', { email, username: u, password: p, code: codeInput, avatar: '⚡' }, res => {
+                socket.emit('register_with_code', { email, username: u, password: p, code: codeInput, avatar: currentAvatarUrl }, res => {
                     if (!res.success) {
                         showAuthError(res.msg);
                     } else {
@@ -588,9 +668,13 @@
                 if (requests && requests.length > 0) {
                     badge.classList.remove('hidden');
                     requests.forEach(req => {
+                        const avatarSrc = globalUsersAvatars[req.username] || req.avatar;
                         listContainer.innerHTML += `
                             <div class="flex items-center justify-between bg-slate-800 p-2.5 rounded-xl">
-                                <span class="text-xs font-bold text-white">${req.avatar} ${req.username}</span>
+                                <div class="flex items-center gap-2">
+                                    <img src="${avatarSrc}" class="w-7 h-7 rounded-full object-cover">
+                                    <span class="text-xs font-bold text-white">${req.username}</span>
+                                </div>
                                 <div class="flex gap-1">
                                     <button type="button" onclick="respondReq('${req.username}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold rounded-lg text-[10px]">قبول</button>
                                     <button type="button" onclick="respondReq('${req.username}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold rounded-lg text-[10px]">رفض</button>
@@ -613,7 +697,7 @@
 
         socket.on('friend_request_accepted', data => {
             if (!mySavedContacts.some(c => c.username === data.by)) {
-                mySavedContacts.push({ username: data.by, avatar: '⚡', isGroup: false });
+                mySavedContacts.push({ username: data.by, isGroup: false });
                 localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
                 renderContactsList();
                 showDesktopNotification("تم قبول الصداقة!", `قبل ${data.by} طلبك وأصبحتم أصدقاء.`);
@@ -624,7 +708,7 @@
             socket.emit('respond_friend_request', { fromUser, accept }, res => {
                 if (accept && res.success) {
                     if (!mySavedContacts.some(c => c.username === res.friend.username)) {
-                        mySavedContacts.push(res.friend);
+                        mySavedContacts.push({ username: res.friend.username, isGroup: false });
                         localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
                         renderContactsList();
                     }
@@ -638,7 +722,7 @@
             if(!input) return;
             const name = input.value.trim();
             if (name) {
-                mySavedContacts.push({ username: name, avatar: '👥', isGroup: true });
+                mySavedContacts.push({ username: name, isGroup: true });
                 localStorage.setItem('nexus_contacts', JSON.stringify(mySavedContacts));
                 renderContactsList();
                 closePlusMenu();
@@ -662,10 +746,12 @@
             mySavedContacts.forEach(c => {
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
+                const avatarSrc = globalUsersAvatars[c.username] || "https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...";
+                
                 container.innerHTML += `
-                    <div onclick="selectContact('${c.username}', '${c.avatar}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95">
+                    <div onclick="selectContact('${c.username}', '${avatarSrc}', ${c.isGroup})" class="p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95">
                         <div class="flex items-center gap-3">
-                            <span class="text-xl">${c.avatar}</span>
+                            <img src="${avatarSrc}" class="w-10 h-10 rounded-full object-cover border border-cyan-500/30">
                             <div>
                                 <span class="font-bold text-sm text-slate-800 dark:text-slate-200 block">${c.username} ${c.isGroup ? '(مجتمع)' : ''}</span>
                                 <span class="text-[10px] text-slate-400">${c.isGroup ? 'مجتمع' : (isOnline ? 'متصل الان' : 'غير متصل')}</span>
@@ -680,7 +766,7 @@
         function selectContact(username, avatar, isGroup) {
             currentTarget = username;
             document.getElementById('targetUsername').innerText = username;
-            document.getElementById('targetAvatar').innerText = avatar;
+            document.getElementById('targetAvatarImg').src = avatar;
             document.getElementById('headerStatusArea').innerHTML = `<p id="targetStatus" class="text-[10px] text-slate-500">محادثة آمنة ومشفرة</p>`;
             if (isGroup) document.getElementById('callButtons').classList.add('hidden');
             else document.getElementById('callButtons').classList.remove('hidden');
@@ -726,6 +812,11 @@
                 } else {
                     myName = res.username;
                     myEmail = res.email;
+                    if(res.avatar) {
+                        currentAvatarUrl = res.avatar;
+                        document.getElementById('myAvatarImg').src = currentAvatarUrl;
+                        localStorage.setItem('nexus_avatar', currentAvatarUrl);
+                    }
                     localStorage.setItem('nexus_user', myName);
                     localStorage.setItem('nexus_email', myEmail);
                     document.getElementById('myUsername').innerText = myName;
@@ -740,6 +831,7 @@
         function logout() {
             localStorage.removeItem('nexus_user');
             localStorage.removeItem('nexus_email');
+            localStorage.removeItem('nexus_avatar');
             location.reload();
         }
 
