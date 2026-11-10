@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,12 +14,26 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); // username -> { email, passwordHash, avatar, contacts: [] }
-const emailsDB = new Set(); 
+// مسار ملف قاعدة البيانات الدائمة على السيرفر
+const DB_FILE = path.join(__dirname, 'database.json');
+
+// تحميل البيانات من الملف عند تشغيل السيرفر أو البدء بقيم فارغة
+let dbData = { users: {}, chats: {} };
+if (fs.existsSync(DB_FILE)) {
+    try {
+        const fileContent = fs.readFileSync(DB_FILE, 'utf8');
+        dbData = JSON.parse(fileContent);
+    } catch (e) {
+        console.log("خطأ في قراءة ملف القاعدة، يتم البدء ببيانات جديدة.");
+    }
+}
+
+function saveDatabase() {
+    fs.writeFileSync(DB_FILE, JSON.stringify(dbData, null, 2), 'utf8');
+}
+
 const onlineUsers = new Map(); // username -> socket.id
 const socketToUser = new Map(); // socket.id -> username
-const chatHistories = new Map(); // chatKey -> [messages]
-
 const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
 
 function isValidEmail(email) {
@@ -38,8 +53,14 @@ io.on('connection', (socket) => {
 
         if (!cleanEmail || !cleanName) return callback({ success: false, msg: 'يرجى إدخال البريد واسم المستخدم' });
         if (!isValidEmail(cleanEmail)) return callback({ success: false, msg: 'البريد الإلكتروني غير صالح' });
-        if (emailsDB.has(cleanEmail)) return callback({ success: false, msg: 'هذا البريد مسجل مسبقاً!' });
-        if (usersDB.has(cleanName)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
+        
+        // التحقق مما إذا كان البريد مسجلاً مسبقاً في قاعدة البيانات الدائمة
+        for (let uname in dbData.users) {
+            if (dbData.users[uname].email === cleanEmail) {
+                return callback({ success: false, msg: 'هذا البريد مسجل مسبقاً!' });
+            }
+        }
+        if (dbData.users[cleanName]) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
 
         const randomCode = Math.floor(100 + Math.random() * 900).toString();
         socket.tempCode = randomCode;
@@ -57,15 +78,17 @@ io.on('connection', (socket) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        usersDB.set(cleanName, { 
+        
+        // حفظ الحساب بشكل دائم في قاعدة البيانات
+        dbData.users[cleanName] = { 
             email: cleanEmail, 
             passwordHash: hashedPassword, 
             avatar: DEFAULT_AVATAR,
             contacts: [] 
-        });
-        emailsDB.add(cleanEmail);
+        };
+        saveDatabase();
 
-        callback({ success: true, msg: 'تم توثيق بريدك وإنشاء الحساب بنجاح! 🎉' });
+        callback({ success: true, msg: 'تم توثيق بريدك وإنشاء وحفظ الحساب بنجاح! 🎉' });
     });
 
     socket.on('login', async ({ identifier, password }, callback) => {
@@ -74,18 +97,17 @@ io.on('connection', (socket) => {
 
         let targetUsername = cleanId;
         if (cleanId.includes('@')) {
-            for (let [uname, udata] of usersDB.entries()) {
-                if (udata.email === cleanId.toLowerCase()) { targetUsername = uname; break; }
+            for (let uname in dbData.users) {
+                if (dbData.users[uname].email === cleanId.toLowerCase()) { targetUsername = uname; break; }
             }
         }
 
-        const user = usersDB.get(targetUsername);
+        const user = dbData.users[targetUsername];
         if (!user) return callback({ success: false, msg: 'المستخدم غير موجود' });
 
         const match = await bcrypt.compare(password, user.passwordHash);
         if (!match) return callback({ success: false, msg: 'كلمة المرور غير صحيحة' });
 
-        // ربط الجلسة الجديدة بثبات وتحديث الـ Socket ID
         onlineUsers.set(targetUsername, socket.id);
         socketToUser.set(socket.id, targetUsername);
 
@@ -102,7 +124,7 @@ io.on('connection', (socket) => {
 
     socket.on('auto_login', ({ username }, callback) => {
         const cleanName = username ? username.trim() : '';
-        const user = usersDB.get(cleanName);
+        const user = dbData.users[cleanName];
         if (user) {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
@@ -124,17 +146,17 @@ io.on('connection', (socket) => {
         const oldUsername = socketToUser.get(socket.id);
         if (!oldUsername) return callback({ success: false, msg: 'غير مسجل دخول!' });
 
-        const userData = usersDB.get(oldUsername);
+        const userData = dbData.users[oldUsername];
         if (!userData) return callback({ success: false, msg: 'المستخدم غير موجود!' });
 
         let finalUsername = oldUsername;
 
         if (newUsername && newUsername.trim() !== oldUsername) {
             finalUsername = newUsername.trim();
-            if (usersDB.has(finalUsername)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
+            if (dbData.users[finalUsername]) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
             
-            usersDB.set(finalUsername, userData);
-            usersDB.delete(oldUsername);
+            dbData.users[finalUsername] = userData;
+            delete dbData.users[oldUsername];
             
             onlineUsers.delete(oldUsername);
             onlineUsers.set(finalUsername, socket.id);
@@ -145,6 +167,8 @@ io.on('connection', (socket) => {
             userData.avatar = newAvatar;
         }
 
+        saveDatabase();
+
         callback({ success: true, username: finalUsername, avatar: userData.avatar });
         broadcastOnlineStatus();
         broadcastAllUsersAvatars();
@@ -152,8 +176,8 @@ io.on('connection', (socket) => {
 
     function broadcastAllUsersAvatars() {
         const avatarsMap = {};
-        for (let [uname, udata] of usersDB.entries()) {
-            avatarsMap[uname] = udata.avatar;
+        for (let uname in dbData.users) {
+            avatarsMap[uname] = dbData.users[uname].avatar;
         }
         io.emit('users_avatars_sync', avatarsMap);
     }
@@ -162,10 +186,10 @@ io.on('connection', (socket) => {
         const sender = socketToUser.get(socket.id);
         const cleanTarget = targetUsername.trim();
 
-        if (!usersDB.has(cleanTarget)) return callback({ success: false, msg: 'المستخدم غير موجود!' });
+        if (!dbData.users[cleanTarget]) return callback({ success: false, msg: 'المستخدم غير موجود!' });
         if (cleanTarget === sender) return callback({ success: false, msg: 'لا يمكنك إضافة نفسك!' });
 
-        const targetUser = usersDB.get(cleanTarget);
+        const targetUser = dbData.users[cleanTarget];
         if (targetUser.contacts.some(c => c.username === sender)) {
             return callback({ success: false, msg: 'أنتما أصدقاء بالفعل!' });
         }
@@ -181,8 +205,8 @@ io.on('connection', (socket) => {
         if (!username) return;
 
         if (accept) {
-            const myUser = usersDB.get(username);
-            const friendUser = usersDB.get(fromUser);
+            const myUser = dbData.users[username];
+            const friendUser = dbData.users[fromUser];
 
             if (myUser && !myUser.contacts.some(c => c.username === fromUser)) {
                 myUser.contacts.push({ username: fromUser, isGroup: false });
@@ -191,6 +215,7 @@ io.on('connection', (socket) => {
                 friendUser.contacts.push({ username: username, isGroup: false });
             }
 
+            saveDatabase();
             callback({ success: true, contacts: myUser.contacts });
 
             const senderSocket = onlineUsers.get(fromUser);
@@ -205,9 +230,10 @@ io.on('connection', (socket) => {
     socket.on('add_group', ({ groupName }, callback) => {
         const username = socketToUser.get(socket.id);
         if (!username) return;
-        const user = usersDB.get(username);
+        const user = dbData.users[username];
         if (user && !user.contacts.some(c => c.username === groupName)) {
             user.contacts.push({ username: groupName, isGroup: true });
+            saveDatabase();
             callback({ success: true, contacts: user.contacts });
         }
     });
@@ -216,12 +242,12 @@ io.on('connection', (socket) => {
         const sender = socketToUser.get(socket.id);
         if (!sender) return callback([]);
         const chatKey = getChatKey(sender, peer);
-        const history = chatHistories.get(chatKey) || [];
+        const history = dbData.chats[chatKey] || [];
         callback(history);
     });
 
     socket.on('get_group_history', ({ groupName }, callback) => {
-        const history = chatHistories.get(groupName) || [];
+        const history = dbData.chats[groupName] || [];
         callback(history);
     });
 
@@ -254,13 +280,15 @@ io.on('connection', (socket) => {
         };
 
         if (isGroup) {
-            if (!chatHistories.has(to)) chatHistories.set(to, []);
-            chatHistories.get(to).push(payload);
+            if (!dbData.chats[to]) dbData.chats[to] = [];
+            dbData.chats[to].push(payload);
+            saveDatabase();
             io.emit('receive_group_message', payload);
         } else {
             const chatKey = getChatKey(sender, to);
-            if (!chatHistories.has(chatKey)) chatHistories.set(chatKey, []);
-            chatHistories.get(chatKey).push(payload);
+            if (!dbData.chats[chatKey]) dbData.chats[chatKey] = [];
+            dbData.chats[chatKey].push(payload);
+            saveDatabase();
 
             const recipientSocketId = onlineUsers.get(to);
             if (recipientSocketId) io.to(recipientSocketId).emit('receive_message', payload);
@@ -292,7 +320,6 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         const user = socketToUser.get(socket.id);
         if (user) {
-            // فقط إذا كان نفس الـ socket الحالي هو المتصل يتم إزالته لتفادي مسح الجلسات المستقرة
             if (onlineUsers.get(user) === socket.id) {
                 onlineUsers.delete(user);
             }
@@ -303,4 +330,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v15.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v16.0 يعمل بنجاح مع الحفظ الدائم على المنفذ: ${PORT}`));
