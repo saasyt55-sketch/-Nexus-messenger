@@ -333,7 +333,6 @@
         let typingTimeout;
         let systemNotificationAllowed = false;
         
-        // الصورة الأصلية الافتراضية الزرقاء لـ Nexus
         const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
         let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_AVATAR;
         let globalUsersAvatars = {};
@@ -416,6 +415,7 @@
             if(vid) vid.className = `absolute bottom-6 right-6 w-28 h-40 object-cover rounded-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 ${filterClass}`;
         }
 
+        // عند الاتصال بالسيرفر، التحقق المباشر من الحساب المخزن محلياً لمنع الخروج
         socket.on('connect', () => {
             const savedUser = localStorage.getItem('nexus_user');
             const savedEmail = localStorage.getItem('nexus_email');
