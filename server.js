@@ -15,11 +15,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const usersDB = new Map(); // username -> { email, passwordHash, avatar, contacts: [] }
 const emailsDB = new Set(); 
-const onlineUsers = new Map(); 
-const socketToUser = new Map(); 
+const onlineUsers = new Map(); // username -> socket.id
+const socketToUser = new Map(); // socket.id -> username
 const chatHistories = new Map(); // chatKey -> [messages]
 
-// الصورة الأصلية الافتراضية الزرقاء لـ Nexus Messenger
 const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
 
 function isValidEmail(email) {
@@ -86,6 +85,7 @@ io.on('connection', (socket) => {
         const match = await bcrypt.compare(password, user.passwordHash);
         if (!match) return callback({ success: false, msg: 'كلمة المرور غير صحيحة' });
 
+        // ربط الجلسة الجديدة بثبات وتحديث الـ Socket ID
         onlineUsers.set(targetUsername, socket.id);
         socketToUser.set(socket.id, targetUsername);
 
@@ -292,7 +292,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         const user = socketToUser.get(socket.id);
         if (user) {
-            onlineUsers.delete(user);
+            // فقط إذا كان نفس الـ socket الحالي هو المتصل يتم إزالته لتفادي مسح الجلسات المستقرة
+            if (onlineUsers.get(user) === socket.id) {
+                onlineUsers.delete(user);
+            }
             socketToUser.delete(socket.id);
             broadcastOnlineStatus();
         }
@@ -300,4 +303,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v14.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v15.0 يعمل بنجاح على المنفذ: ${PORT}`));
