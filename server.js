@@ -14,10 +14,8 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// مسار ملف قاعدة البيانات الدائمة على السيرفر
 const DB_FILE = path.join(__dirname, 'database.json');
 
-// تحميل البيانات من الملف عند تشغيل السيرفر أو البدء بقيم فارغة
 let dbData = { users: {}, chats: {} };
 if (fs.existsSync(DB_FILE)) {
     try {
@@ -32,8 +30,8 @@ function saveDatabase() {
     fs.writeFileSync(DB_FILE, JSON.stringify(dbData, null, 2), 'utf8');
 }
 
-const onlineUsers = new Map(); // username -> socket.id
-const socketToUser = new Map(); // socket.id -> username
+const onlineUsers = new Map(); 
+const socketToUser = new Map(); 
 const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
 
 function isValidEmail(email) {
@@ -45,6 +43,11 @@ function getChatKey(user1, user2) {
     return [user1, user2].sort().join('___');
 }
 
+function broadcastOnlineStatus() {
+    const onlineList = Array.from(onlineUsers.keys());
+    io.emit('online_users_status', onlineList);
+}
+
 io.on('connection', (socket) => {
 
     socket.on('request_verification_code', ({ email, username }, callback) => {
@@ -54,7 +57,6 @@ io.on('connection', (socket) => {
         if (!cleanEmail || !cleanName) return callback({ success: false, msg: 'يرجى إدخال البريد واسم المستخدم' });
         if (!isValidEmail(cleanEmail)) return callback({ success: false, msg: 'البريد الإلكتروني غير صالح' });
         
-        // التحقق مما إذا كان البريد مسجلاً مسبقاً في قاعدة البيانات الدائمة
         for (let uname in dbData.users) {
             if (dbData.users[uname].email === cleanEmail) {
                 return callback({ success: false, msg: 'هذا البريد مسجل مسبقاً!' });
@@ -79,7 +81,6 @@ io.on('connection', (socket) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // حفظ الحساب بشكل دائم في قاعدة البيانات
         dbData.users[cleanName] = { 
             email: cleanEmail, 
             passwordHash: hashedPassword, 
@@ -330,4 +331,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v16.0 يعمل بنجاح مع الحفظ الدائم على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v17.0 يعمل بنجاح مع الحفظ التام على المنفذ: ${PORT}`));
