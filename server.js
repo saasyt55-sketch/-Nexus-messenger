@@ -13,7 +13,7 @@ const io = new Server(server, {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-const usersDB = new Map(); 
+const usersDB = new Map(); // username -> { email, passwordHash, avatar }
 const emailsDB = new Set(); 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
@@ -52,7 +52,9 @@ io.on('connection', (socket) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        usersDB.set(cleanName, { email: cleanEmail, passwordHash: hashedPassword, avatar: avatar || '⚡' });
+        const defaultAvatar = avatar || 'https://scontent.fjed4-1.fna.fbcdn.net/v/t39.30808-6/475438259_1017618267032974_6259024097486820299_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=F...'; // رابط افتراضي للفيسبوك
+        
+        usersDB.set(cleanName, { email: cleanEmail, passwordHash: hashedPassword, avatar: 'https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png' });
         emailsDB.add(cleanEmail);
         friendRequests.set(cleanName, []);
         tempVerifyCodes.delete(cleanEmail);
@@ -82,6 +84,7 @@ io.on('connection', (socket) => {
 
         callback({ success: true, username: targetUsername, avatar: user.avatar, email: user.email });
         broadcastOnlineStatus();
+        broadcastAllUsersAvatars();
     });
 
     socket.on('auto_login', ({ username }, callback) => {
@@ -92,10 +95,54 @@ io.on('connection', (socket) => {
             socketToUser.set(socket.id, cleanName);
             callback({ success: true, username: cleanName, avatar: user.avatar, email: user.email });
             broadcastOnlineStatus();
+            broadcastAllUsersAvatars();
         } else {
             callback({ success: false });
         }
     });
+
+    // تحديث الصورة والاسم الشخصي
+    socket.on('update_profile', ({ newAvatar, newUsername }, callback) => {
+        const oldUsername = socketToUser.get(socket.id);
+        if (!oldUsername) return callback({ success: false, msg: 'غير مسجل دخول!' });
+
+        const userData = usersDB.get(oldUsername);
+        if (!userData) return callback({ success: false, msg: 'المستخدم غير موجود!' });
+
+        let finalUsername = oldUsername;
+
+        if (newUsername && newUsername.trim() !== oldUsername) {
+            finalUsername = newUsername.trim();
+            if (usersDB.has(finalUsername)) return callback({ success: false, msg: 'اسم المستخدم مستخدم مسبقاً!' });
+            
+            // نقل بيانات الحساب لليوزر الجديد
+            usersDB.set(finalUsername, userData);
+            usersDB.delete(oldUsername);
+            
+            onlineUsers.delete(oldUsername);
+            onlineUsers.set(finalUsername, socket.id);
+            socketToUser.set(socket.id, finalUsername);
+            
+            friendRequests.set(finalUsername, friendRequests.get(oldUsername) || []);
+            friendRequests.delete(oldUsername);
+        }
+
+        if (newAvatar) {
+            userData.avatar = newAvatar;
+        }
+
+        callback({ success: true, username: finalUsername, avatar: userData.avatar });
+        broadcastOnlineStatus();
+        broadcastAllUsersAvatars();
+    });
+
+    function broadcastAllUsersAvatars() {
+        const avatarsMap = {};
+        for (let [uname, udata] of usersDB.entries()) {
+            avatarsMap[uname] = udata.avatar;
+        }
+        io.emit('users_avatars_sync', avatarsMap);
+    }
 
     socket.on('send_friend_request', ({ targetUsername }, callback) => {
         const sender = socketToUser.get(socket.id);
@@ -119,7 +166,7 @@ io.on('connection', (socket) => {
         const username = socketToUser.get(socket.id);
         if (!username) return callback([]);
         const requests = friendRequests.get(username) || [];
-        callback(requests.map(reqName => ({ username: reqName, avatar: usersDB.get(reqName)?.avatar || '⚡' })));
+        callback(requests.map(reqName => ({ username: reqName, avatar: usersDB.get(reqName)?.avatar || 'https://www.facebook.com/photo/?fbid=1017618267032974&set=a.100287335432743' })));
     });
 
     socket.on('respond_friend_request', ({ fromUser, accept }, callback) => {
@@ -130,9 +177,9 @@ io.on('connection', (socket) => {
         friendRequests.set(username, requests.filter(r => r !== fromUser));
 
         if (accept) {
-            callback({ success: true, friend: { username: fromUser, avatar: usersDB.get(fromUser)?.avatar || '⚡' } });
+            callback({ success: true, friend: { username: fromUser, avatar: usersDB.get(fromUser)?.avatar || 'https://www.facebook.com/photo/?fbid=1017618267032974&set=a.100287335432743' } });
             const senderSocket = onlineUsers.get(fromUser);
-            if (senderSocket) io.to(senderSocket).emit('friend_request_accepted', { by: username });
+            if (senderSocket) io.to(senderSocket).emit('friend_request_accepted', { by: username, avatar: usersDB.get(username)?.avatar });
         } else {
             callback({ success: false });
         }
@@ -211,4 +258,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v9.1 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v11.0 يعمل بنجاح على المنفذ: ${PORT}`));
