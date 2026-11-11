@@ -1,21 +1,51 @@
 {
-  "name": "-Nexus-messenger VIP",
-  "short_name": "-Nexus-",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#030712",
-  "theme_color": "#06b6d4",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png",
-      "sizes": "192x192",
-      "type": "image/png"
+  "name": "nexus",
+  "productName": "nexus messenger",
+  "version": "15.0.0",
+  "description": "Nexus Messenger cross-platform communication app",
+  "main": "main.js",
+  "icon": "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png",
+  "executable": {
+    "binaryName": "nexus",
+    "icon": "assets/icon.png"
+  },
+  "platforms": {
+    "linux": {
+      "desktop": {
+        "Name": "nexus messenger",
+        "GenericName": "Internet Messenger",
+        "Comment": "Nexus Messenger Client",
+        "Exec": "nexus %U",
+        "Icon": "nexus",
+        "Terminal": false,
+        "Type": "Application",
+        "Categories": ["Network", "InstantMessaging", "Chat"]
+      },
+      "permissions": [
+        "network",
+        "audio-capture",
+        "video-capture",
+        "desktop-notifications"
+      ]
     },
-    {
-      "src": "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png",
-      "sizes": "512x512",
-      "type": "image/png"
+    "macOS": {
+      "bundleIdentifier": "com.nexus.messenger",
+      "bundleName": "nexus messenger",
+      "category": "public.app-category.social-networking",
+      "minimumOSVersion": "10.15",
+      "infoPlist": {
+        "CFBundleDisplayName": "nexus messenger",
+        "CFBundleExecutable": "nexus",
+        "CFBundleVersion": "15.0.0",
+        "NSHighResolutionCapable": true,
+        "NSMicrophoneUsageDescription": "Nexus Messenger requires access to your microphone for voice calls.",
+        "NSCameraUsageDescription": "Nexus Messenger requires access to your camera for video calls."
+      }
+    },
+    "windows": {
+      "appId": "com.nexus.messenger",
+      "executionLevel": "asInvoker",
+      "dpiAwareness": "PerMonitorV2"
     }
-  ]
+  }
 }
