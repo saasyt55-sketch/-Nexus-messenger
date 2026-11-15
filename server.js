@@ -331,4 +331,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v17.0 يعمل بنجاح مع الحفظ التام على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v18.0 يعمل بنجاح على المنفذ: ${PORT}`));
