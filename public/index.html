@@ -23,8 +23,12 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         
-        .mobile-slide-enter { animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideIn { from { transform: translateY(15px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* أنيميشن ناعم وسلس ومتطور */
+        .mobile-slide-enter { animation: smoothScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes smoothScaleIn { 
+            0% { transform: scale(0.94) translateY(10px); opacity: 0; } 
+            100% { transform: scale(1) translateY(0); opacity: 1; } 
+        }
         
         .typing-dots span {
             animation: bounce 1.4s infinite ease-in-out both;
@@ -35,13 +39,13 @@
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-950 dark:bg-slate-950 bg-slate-100 text-slate-900 dark:text-slate-100">
+<body class="h-screen flex items-center justify-center p-0 sm:p-4 overflow-hidden bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
     <!-- نافذة تسجيل الدخول -->
     <div id="authModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 mobile-slide-enter">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-cyan-500/30 p-6 sm:p-8 rounded-3xl w-full max-w-md text-center shadow-2xl">
             <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-1">-Nexus-</h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الموثق مع رمز تحقق مكوّن من 3 أرقام (حفظ دائم تلقائي)</p>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-6">سجل ببريدك الموثق مع رمز تحقق مكوّن من 3 أرقام (حفظ دائم)</p>
             
             <div id="authFields" class="space-y-3">
                 <input type="email" id="authEmail" placeholder="البريد الإلكتروني الحقيقي (Email)" class="w-full px-4 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-center text-sm focus:outline-none focus:border-cyan-500">
@@ -84,7 +88,7 @@
                         </button>
                         
                         <div id="openProfileDiv" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير صورتك واسمك">
-                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png" class="w-6 h-6 rounded-full object-cover">
+                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png" class="w-6 h-6 rounded-full object-cover">
                             <span id="myUsername" class="text-xs text-cyan-700 dark:text-cyan-300 font-bold">...</span>
                         </div>
                     </div>
@@ -103,11 +107,11 @@
                     <button type="button" id="showSidebarBtn" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
+                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
-                            <p id="targetStatus" class="text-[10px] text-slate-500">حفظ دائم على السيرفر ومحلياً</p>
+                            <p id="targetStatus" class="text-[10px] text-slate-500">حفظ دائم وسريع</p>
                         </div>
                     </div>
                 </div>
@@ -290,13 +294,26 @@
         let isCodeStep = false;
         let typingTimeout;
         
-        const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
+        const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png";
         let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_AVATAR;
         let globalUsersAvatars = {};
         let serverContacts = [];
         let onlineUsersStatus = [];
+        let myFriendRequests = [];
 
         window.addEventListener('DOMContentLoaded', () => {
+            // استرجاع الثيم المحفوظ
+            const savedTheme = localStorage.getItem('nexus_theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeText').innerText = "الفاتح";
+                document.getElementById('themeIcon').className = "fa-solid fa-sun";
+            } else {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeText').innerText = "الداكن";
+                document.getElementById('themeIcon').className = "fa-solid fa-moon";
+            }
+
             checkAutoLogin();
         });
 
@@ -317,6 +334,8 @@
                             document.getElementById('myAvatarImg').src = currentAvatarUrl;
                         }
                         serverContacts = res.contacts || [];
+                        myFriendRequests = res.friendRequests || [];
+                        updateRequestsBadge();
                         document.getElementById('myUsername').innerText = myName;
                         document.getElementById('myEmailDisplay').innerText = myEmail;
                         document.getElementById('authModal').classList.add('hidden');
@@ -494,6 +513,8 @@
                         document.getElementById('myAvatarImg').src = currentAvatarUrl;
                     }
                     serverContacts = res.contacts || [];
+                    myFriendRequests = res.friendRequests || [];
+                    updateRequestsBadge();
                     localStorage.setItem('nexus_user', myName);
                     localStorage.setItem('nexus_email', myEmail);
                     document.getElementById('myUsername').innerText = myName;
@@ -609,7 +630,7 @@
             document.getElementById('friendRequestsSection').classList.remove('hidden');
             document.getElementById('addFriendSection').classList.add('hidden');
             document.getElementById('createGroupSection').classList.add('hidden');
-            document.getElementById('reqBadge')?.classList.add('hidden');
+            renderRequestsList();
         };
         document.getElementById('openReqSecBtn').addEventListener('click', openFriendRequestsSection);
         document.getElementById('openReqSecBtn').addEventListener('touchstart', (e) => { e.preventDefault(); openFriendRequestsSection(); });
@@ -639,13 +660,62 @@
         document.getElementById('sendFriendReqBtn').addEventListener('touchstart', (e) => { e.preventDefault(); sendFriendReq(); });
 
         socket.on('new_friend_request', data => {
-            document.getElementById('reqBadge')?.classList.remove('hidden');
+            myFriendRequests = data.requests || [];
+            updateRequestsBadge();
         });
 
         socket.on('friend_request_accepted', data => {
             serverContacts = data.contacts;
             renderContactsList();
         });
+
+        function updateRequestsBadge() {
+            const badge = document.getElementById('reqBadge');
+            if (!badge) return;
+            if (myFriendRequests.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function renderRequestsList() {
+            const listDiv = document.getElementById('friendRequestsList');
+            if (!listDiv) return;
+            listDiv.innerHTML = '';
+            if (myFriendRequests.length === 0) {
+                listDiv.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2">لا توجد طلبات صداقة معلقة</p>';
+                return;
+            }
+            myFriendRequests.forEach(fromUser => {
+                const avatarSrc = globalUsersAvatars[fromUser] || DEFAULT_AVATAR;
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700";
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover">
+                        <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${fromUser}</span>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="respondReq('${fromUser}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold text-[10px] rounded-lg">قبول</button>
+                        <button onclick="respondReq('${fromUser}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold text-[10px] rounded-lg">رفض</button>
+                    </div>
+                `;
+                listDiv.appendChild(item);
+            });
+        }
+
+        window.respondReq = function(fromUser, accept) {
+            socket.emit('respond_friend_request', { fromUser, accept }, res => {
+                if (res.success) {
+                    serverContacts = res.contacts;
+                    myFriendRequests = res.friendRequests || [];
+                    updateRequestsBadge();
+                    renderRequestsList();
+                    renderContactsList();
+                }
+            });
+        };
 
         const createNewGroup = () => {
             const input = document.getElementById('groupNameInput');
@@ -735,10 +805,12 @@
             const icon = document.getElementById('themeIcon');
             if (html.classList.contains('dark')) {
                 html.classList.remove('dark');
+                localStorage.setItem('nexus_theme', 'light');
                 if(text) text.innerText = "الفاتح";
                 if(icon) icon.className = "fa-solid fa-sun";
             } else {
                 html.classList.add('dark');
+                localStorage.setItem('nexus_theme', 'dark');
                 if(text) text.innerText = "الداكن";
                 if(icon) icon.className = "fa-solid fa-moon";
             }
