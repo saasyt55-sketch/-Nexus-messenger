@@ -33,8 +33,8 @@ function saveDatabase() {
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
 
-// صورة البروفايل الافتراضية الكلاسيكية (مستخدم بدون صورة مثل واتساب)
-const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png";
+// الصورة الافتراضية الجديدة المطلوبة للملف الشخصي
+const DEFAULT_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
 
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
             passwordHash: hashedPassword, 
             avatar: DEFAULT_AVATAR,
             contacts: [],
-            friendRequests: [] // قائمة الطلبات الواردة المخزنة بشكل دائم
+            friendRequests: [] 
         };
         saveDatabase();
 
@@ -116,6 +116,7 @@ io.on('connection', (socket) => {
         socketToUser.set(socket.id, targetUsername);
 
         if (!user.friendRequests) user.friendRequests = [];
+        if (!user.avatar) user.avatar = DEFAULT_AVATAR;
 
         callback({ 
             success: true, 
@@ -136,6 +137,8 @@ io.on('connection', (socket) => {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
             if (!user.friendRequests) user.friendRequests = [];
+            if (!user.avatar) user.avatar = DEFAULT_AVATAR;
+
             callback({ 
                 success: true, 
                 username: cleanName, 
@@ -186,7 +189,7 @@ io.on('connection', (socket) => {
     function broadcastAllUsersAvatars() {
         const avatarsMap = {};
         for (let uname in dbData.users) {
-            avatarsMap[uname] = dbData.users[uname].avatar;
+            avatarsMap[uname] = dbData.users[uname].avatar || DEFAULT_AVATAR;
         }
         io.emit('users_avatars_sync', avatarsMap);
     }
@@ -221,7 +224,7 @@ io.on('connection', (socket) => {
 
     socket.on('respond_friend_request', ({ fromUser, accept }, callback) => {
         const username = socketToUser.get(socket.id);
-        if (!username) return;
+        if (!username) return callback({ success: false });
 
         const myUser = dbData.users[username];
         const friendUser = dbData.users[fromUser];
@@ -237,16 +240,24 @@ io.on('connection', (socket) => {
             if (!friendUser.contacts.some(c => c.username === username)) {
                 friendUser.contacts.push({ username: username, isGroup: false });
             }
-            saveDatabase();
-
-            const senderSocket = onlineUsers.get(fromUser);
-            if (senderSocket) {
-                io.to(senderSocket).emit('friend_request_accepted', { by: username, contacts: friendUser.contacts });
-            }
         }
 
         saveDatabase();
-        callback({ success: true, contacts: myUser.contacts, friendRequests: myUser.friendRequests });
+
+        // إرسال التحديث للطرف الثاني أيضاً إن كان متصلاً
+        const senderSocketId = onlineUsers.get(fromUser);
+        if (senderSocketId && accept) {
+            io.to(senderSocketId).emit('friend_request_accepted', { 
+                by: username, 
+                contacts: friendUser.contacts 
+            });
+        }
+
+        callback({ 
+            success: true, 
+            contacts: myUser.contacts, 
+            friendRequests: myUser.friendRequests 
+        });
     });
 
     socket.on('add_group', ({ groupName }, callback) => {
@@ -352,4 +363,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`running: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v20.0 يعمل بنجاح على المنفذ: ${PORT}`));
