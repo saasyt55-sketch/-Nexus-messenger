@@ -32,7 +32,9 @@ function saveDatabase() {
 
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
-const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png";
+
+// صورة البروفايل الافتراضية الكلاسيكية (مستخدم بدون صورة مثل واتساب)
+const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png";
 
 function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -85,7 +87,8 @@ io.on('connection', (socket) => {
             email: cleanEmail, 
             passwordHash: hashedPassword, 
             avatar: DEFAULT_AVATAR,
-            contacts: [] 
+            contacts: [],
+            friendRequests: [] // قائمة الطلبات الواردة المخزنة بشكل دائم
         };
         saveDatabase();
 
@@ -112,12 +115,15 @@ io.on('connection', (socket) => {
         onlineUsers.set(targetUsername, socket.id);
         socketToUser.set(socket.id, targetUsername);
 
+        if (!user.friendRequests) user.friendRequests = [];
+
         callback({ 
             success: true, 
             username: targetUsername, 
             avatar: user.avatar, 
             email: user.email,
-            contacts: user.contacts 
+            contacts: user.contacts,
+            friendRequests: user.friendRequests
         });
         broadcastOnlineStatus();
         broadcastAllUsersAvatars();
@@ -129,12 +135,14 @@ io.on('connection', (socket) => {
         if (user) {
             onlineUsers.set(cleanName, socket.id);
             socketToUser.set(socket.id, cleanName);
+            if (!user.friendRequests) user.friendRequests = [];
             callback({ 
                 success: true, 
                 username: cleanName, 
                 avatar: user.avatar, 
                 email: user.email,
-                contacts: user.contacts 
+                contacts: user.contacts,
+                friendRequests: user.friendRequests
             });
             broadcastOnlineStatus();
             broadcastAllUsersAvatars();
@@ -195,8 +203,18 @@ io.on('connection', (socket) => {
             return callback({ success: false, msg: 'أنتما أصدقاء بالفعل!' });
         }
 
+        if (!targetUser.friendRequests) targetUser.friendRequests = [];
+        if (targetUser.friendRequests.includes(sender)) {
+            return callback({ success: false, msg: 'تم إرسال الطلب مسبقاً وهو بانتظار القبول!' });
+        }
+
+        targetUser.friendRequests.push(sender);
+        saveDatabase();
+
         const targetSocketId = onlineUsers.get(cleanTarget);
-        if (targetSocketId) io.to(targetSocketId).emit('new_friend_request', { from: sender });
+        if (targetSocketId) {
+            io.to(targetSocketId).emit('new_friend_request', { from: sender, requests: targetUser.friendRequests });
+        }
 
         callback({ success: true, msg: 'تم إرسال طلب الصداقة بنجاح! ⏳' });
     });
@@ -205,27 +223,30 @@ io.on('connection', (socket) => {
         const username = socketToUser.get(socket.id);
         if (!username) return;
 
-        if (accept) {
-            const myUser = dbData.users[username];
-            const friendUser = dbData.users[fromUser];
+        const myUser = dbData.users[username];
+        const friendUser = dbData.users[fromUser];
 
-            if (myUser && !myUser.contacts.some(c => c.username === fromUser)) {
+        if (myUser && myUser.friendRequests) {
+            myUser.friendRequests = myUser.friendRequests.filter(u => u !== fromUser);
+        }
+
+        if (accept && myUser && friendUser) {
+            if (!myUser.contacts.some(c => c.username === fromUser)) {
                 myUser.contacts.push({ username: fromUser, isGroup: false });
             }
-            if (friendUser && !friendUser.contacts.some(c => c.username === username)) {
+            if (!friendUser.contacts.some(c => c.username === username)) {
                 friendUser.contacts.push({ username: username, isGroup: false });
             }
-
             saveDatabase();
-            callback({ success: true, contacts: myUser.contacts });
 
             const senderSocket = onlineUsers.get(fromUser);
             if (senderSocket) {
                 io.to(senderSocket).emit('friend_request_accepted', { by: username, contacts: friendUser.contacts });
             }
-        } else {
-            callback({ success: false });
         }
+
+        saveDatabase();
+        callback({ success: true, contacts: myUser.contacts, friendRequests: myUser.friendRequests });
     });
 
     socket.on('add_group', ({ groupName }, callback) => {
@@ -331,4 +352,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v18.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`running: ${PORT}`));
