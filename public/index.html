@@ -6,8 +6,8 @@
     <title>-Nexus-messenger VIP Pro</title>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
-    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png">
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -23,7 +23,6 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         
-        /* أنيميشن ناعم وسلس ومتطور */
         .mobile-slide-enter { animation: smoothScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes smoothScaleIn { 
             0% { transform: scale(0.94) translateY(10px); opacity: 0; } 
@@ -88,7 +87,7 @@
                         </button>
                         
                         <div id="openProfileDiv" class="flex items-center gap-1.5 bg-cyan-100 dark:bg-cyan-950 px-2.5 py-1 rounded-full cursor-pointer hover:scale-105 transition shadow-sm border border-cyan-500/30" title="اضغط لتغيير صورتك واسمك">
-                            <img id="myAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png" class="w-6 h-6 rounded-full object-cover">
+                            <img id="myAvatarImg" src="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png" class="w-6 h-6 rounded-full object-cover">
                             <span id="myUsername" class="text-xs text-cyan-700 dark:text-cyan-300 font-bold">...</span>
                         </div>
                     </div>
@@ -107,7 +106,7 @@
                     <button type="button" id="showSidebarBtn" class="md:hidden w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-cyan-600 dark:text-cyan-400 active:scale-90">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
+                    <img id="targetAvatarImg" src="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png" class="w-10 h-10 rounded-full object-cover shadow border border-cyan-500/30">
                     <div>
                         <h3 id="targetUsername" class="font-bold text-slate-900 dark:text-white text-sm">اختر صديقاً لبدء المحادثة</h3>
                         <div id="headerStatusArea">
@@ -279,7 +278,7 @@
             <div class="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-400">
                 <span>بواسطة</span>
                 <span class="font-bold text-cyan-500">Nova Studio</span>
-                <img src="https://cdn.phototourl.com/member/2026-11-10-d21093a7-69ee-4f15-a5cd-7a6dd3901962.png" alt="Nova Studio" class="w-5 h-5 object-contain rounded-full">
+                <img src="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png" alt="Nova Studio" class="w-5 h-5 object-contain rounded-full">
             </div>
 
             <button type="button" id="logoutBtn" class="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow-md mt-2">تسجيل الخروج وحذف الجلسة</button>
@@ -294,7 +293,7 @@
         let isCodeStep = false;
         let typingTimeout;
         
-        const DEFAULT_AVATAR = "https://cdn.phototourl.com/member/2026-11-10-8b63e147-3f8c-4f25-82b1-6a2c918c0e21.png";
+        const DEFAULT_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
         let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_AVATAR;
         let globalUsersAvatars = {};
         let serverContacts = [];
@@ -302,7 +301,6 @@
         let myFriendRequests = [];
 
         window.addEventListener('DOMContentLoaded', () => {
-            // استرجاع الثيم المحفوظ
             const savedTheme = localStorage.getItem('nexus_theme') || 'dark';
             if (savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
@@ -448,7 +446,7 @@
                     document.getElementById('myUsername').innerText = myName;
                     document.getElementById('myAvatarImg').src = currentAvatarUrl;
                     closeProfileModal();
-                    alert("تم حفظ ملفك الشخصي وتحديثه للجميع بنجاح ✨");
+                    alert("تم حفظ ملفك الشخصي وصورتك بنجاح للابد على السيرفر ✨");
                 }
             });
         };
@@ -697,15 +695,25 @@
                         <span class="text-xs font-bold text-slate-800 dark:text-slate-200">${fromUser}</span>
                     </div>
                     <div class="flex gap-1">
-                        <button onclick="respondReq('${fromUser}', true)" class="px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold text-[10px] rounded-lg">قبول</button>
-                        <button onclick="respondReq('${fromUser}', false)" class="px-2.5 py-1 bg-rose-600 text-white font-bold text-[10px] rounded-lg">رفض</button>
+                        <button type="button" class="accept-btn px-2.5 py-1 bg-emerald-500 text-slate-950 font-bold text-[10px] rounded-lg">قبول</button>
+                        <button type="button" class="reject-btn px-2.5 py-1 bg-rose-600 text-white font-bold text-[10px] rounded-lg">رفض</button>
                     </div>
                 `;
+                
+                const acceptAction = () => respondReq(fromUser, true);
+                const rejectAction = () => respondReq(fromUser, false);
+                
+                item.querySelector('.accept-btn').addEventListener('click', acceptAction);
+                item.querySelector('.accept-btn').addEventListener('touchstart', (e) => { e.preventDefault(); acceptAction(); });
+                
+                item.querySelector('.reject-btn').addEventListener('click', rejectAction);
+                item.querySelector('.reject-btn').addEventListener('touchstart', (e) => { e.preventDefault(); rejectAction(); });
+
                 listDiv.appendChild(item);
             });
         }
 
-        window.respondReq = function(fromUser, accept) {
+        function respondReq(fromUser, accept) {
             socket.emit('respond_friend_request', { fromUser, accept }, res => {
                 if (res.success) {
                     serverContacts = res.contacts;
@@ -715,7 +723,7 @@
                     renderContactsList();
                 }
             });
-        };
+        }
 
         const createNewGroup = () => {
             const input = document.getElementById('groupNameInput');
