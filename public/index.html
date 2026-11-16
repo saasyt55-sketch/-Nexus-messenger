@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>-Nexus-messenger VIP Pro</title>
 
+    <!-- أيقونة الموقع الثابتة حصرياً -->
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png">
-    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png">
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/member/2026-10-30-b138def7-8ffd-4d03-ad72-92deeb35ed72.png">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -293,8 +294,9 @@
         let isCodeStep = false;
         let typingTimeout;
         
-        const DEFAULT_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
-        let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_AVATAR;
+        // الصورة الافتراضية للملف الشخصي فقط
+        const DEFAULT_USER_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
+        let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_USER_AVATAR;
         let globalUsersAvatars = {};
         let serverContacts = [];
         let onlineUsersStatus = [];
@@ -686,7 +688,7 @@
                 return;
             }
             myFriendRequests.forEach(fromUser => {
-                const avatarSrc = globalUsersAvatars[fromUser] || DEFAULT_AVATAR;
+                const avatarSrc = globalUsersAvatars[fromUser] || DEFAULT_USER_AVATAR;
                 const item = document.createElement('div');
                 item.className = "flex items-center justify-between p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700";
                 item.innerHTML = `
@@ -759,7 +761,7 @@
             serverContacts.forEach(c => {
                 const isOnline = onlineUsersStatus.includes(c.username);
                 const dotColor = c.isGroup ? 'bg-cyan-500' : (isOnline ? 'bg-emerald-500' : 'bg-slate-400');
-                const avatarSrc = globalUsersAvatars[c.username] || DEFAULT_AVATAR;
+                const avatarSrc = globalUsersAvatars[c.username] || DEFAULT_USER_AVATAR;
                 
                 const div = document.createElement('div');
                 div.className = "p-3 rounded-2xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800/80 cursor-pointer flex items-center justify-between transition shadow-sm active:scale-95";
