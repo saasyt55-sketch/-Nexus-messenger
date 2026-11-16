@@ -33,7 +33,6 @@ function saveDatabase() {
 const onlineUsers = new Map(); 
 const socketToUser = new Map(); 
 
-// صورة الملف الشخصي الافتراضية للمستخدمين فقط
 const DEFAULT_USER_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
 
 function isValidEmail(email) {
@@ -196,8 +195,9 @@ io.on('connection', (socket) => {
 
     socket.on('send_friend_request', ({ targetUsername }, callback) => {
         const sender = socketToUser.get(socket.id);
-        const cleanTarget = targetUsername.trim();
+        const cleanTarget = targetUsername ? targetUsername.trim() : '';
 
+        if (!cleanTarget) return callback({ success: false, msg: 'يرجى إدخال اسم المستخدم!' });
         if (!dbData.users[cleanTarget]) return callback({ success: false, msg: 'المستخدم غير موجود!' });
         if (cleanTarget === sender) return callback({ success: false, msg: 'لا يمكنك إضافة نفسك!' });
 
@@ -362,4 +362,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v21.0 يعمل بنجاح على المنفذ: ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 -Nexus-messenger v22.0 يعمل بنجاح على المنفذ: ${PORT}`));
