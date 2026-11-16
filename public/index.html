@@ -239,7 +239,7 @@
 
             <div id="addFriendSection" class="hidden pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <input type="text" id="searchUserInput" placeholder="اكتب يوزر الشخص بالظبط..." class="w-full px-4 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500 text-center">
-                <button type="button" id="sendFriendReqBtn" class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs">إرسال طلب الصداقة</button>
+                <button type="button" id="sendFriendReqBtn" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black rounded-xl text-xs transition shadow">إرسال طلب الصداقة ⚡</button>
                 <p id="searchUserResult" class="text-xs font-bold hidden"></p>
             </div>
 
@@ -294,7 +294,6 @@
         let isCodeStep = false;
         let typingTimeout;
         
-        // الصورة الافتراضية للملف الشخصي فقط
         const DEFAULT_USER_AVATAR = "https://cdn.phototourl.com/anon/2026-11-16-9f87e488-3e6b-4425-827a-d84b8fe352be.png";
         let currentAvatarUrl = localStorage.getItem('nexus_avatar') || DEFAULT_USER_AVATAR;
         let globalUsersAvatars = {};
@@ -643,12 +642,18 @@
         document.getElementById('openGroupSecBtn').addEventListener('click', openCreateGroupSection);
         document.getElementById('openGroupSecBtn').addEventListener('touchstart', (e) => { e.preventDefault(); openCreateGroupSection(); });
 
+        // تفعيل زر إرسال طلب الصداقة بالضغط واللمس بشكل مؤكد
         const sendFriendReq = () => {
             const input = document.getElementById('searchUserInput');
             const resText = document.getElementById('searchUserResult');
             if(!input || !resText) return;
             const target = input.value.trim();
-            if (!target) return;
+            if (!target) {
+                resText.innerText = "يرجى كتابة اسم المستخدم أولاً!";
+                resText.className = "text-xs font-bold text-rose-500 block";
+                resText.classList.remove('hidden');
+                return;
+            }
 
             socket.emit('send_friend_request', { targetUsername: target }, res => {
                 resText.innerText = res.msg;
